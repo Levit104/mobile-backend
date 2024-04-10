@@ -75,6 +75,20 @@
             <version>2.3.10</version>
             <scope>runtime</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.ktor/ktor-client-content-negotiation-jvm -->
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-client-content-negotiation-jvm</artifactId>
+            <version>2.3.10</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.ktor/ktor-serialization-kotlinx-json-jvm -->
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-serialization-kotlinx-json-jvm</artifactId>
+            <version>2.3.10</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/io.ktor/ktor-client-core-jvm -->
         <dependency>
             <groupId>io.ktor</groupId>

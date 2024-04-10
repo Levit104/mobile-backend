@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserDAO (
     var id : Long?,
-    val username: String,
+    val login: String,
     val password: String
 )
 
@@ -22,10 +22,10 @@ class UserRedisRepository : RedisRepository<UserDAO, Map<String, String>> {
 
     override suspend fun addItem(userId: String, item: UserDAO, time: Long) {
         jedis.hset("user#$userId", "id", item.id.toString())
-        jedis.hset("user#$userId", "login", item.username)
+        jedis.hset("user#$userId", "login", item.login)
         jedis.hset("user#$userId", "password", item.password)
         jedis.pexpire("user#$userId", time)
-        jedis.setex("username#${item.username}", time, userId)
+        jedis.setex("username#${item.login}", time, userId)
     }
 
     suspend fun getUserByLogin(login: String) : Map<String, String>{
