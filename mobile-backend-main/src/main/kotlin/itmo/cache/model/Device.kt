@@ -37,6 +37,10 @@ class DeviceRedisRepository : RedisRepository<DeviceDAO, Map<String, String>> {
         return set.map { s -> this.getItem(s) }
     }
 
+    suspend fun isItemsExistsByUser(userId: String) : Boolean{
+        return jedis.exists("user_device$userId")
+    }
+
     suspend fun isItemExistsByUser(deviceId: String, username : String) : Boolean {
         val userId = jedis.get("username#$username")
         return jedis.sismember("user_device#$userId", deviceId)
