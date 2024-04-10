@@ -6,33 +6,22 @@ import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import itmo.dao.DeviceDAO
-import itmo.models.Device
+import itmo.dao.StateTypeDAO
+import itmo.models.StateType
 
+fun Route.stateTypeRouting() {
+    val dao = StateTypeDAO()
 
-fun Route.deviceRouting() {
-    val dao = DeviceDAO()
-
-    route("devices") {
+    route("state-types") {
         get {
-            if (call.request.queryParameters.isEmpty()) {
-                call.respond(dao.findAll())
-            }
-
-            val userId = call.request.queryParameters["userId"]?.toIntOrNull()
-
-            if (userId == null || userId <= 0) {
-                call.respond(HttpStatusCode.BadRequest, "Не указан пользователь")
-            } else {
-                call.respond(dao.findAllByUser(userId))
-            }
+            call.respond(dao.findAll())
         }
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
-                val entity: Device? = dao.findById(id)
+                val entity: StateType? = dao.findById(id)
                 if (entity == null) {
-                    call.respond(HttpStatusCode.NotFound, "Устройство с id=$id не найден")
+                    call.respond(HttpStatusCode.NotFound, "Тип состояния с id=$id не найден")
                 } else {
                     call.respond(entity)
                 }
@@ -40,12 +29,12 @@ fun Route.deviceRouting() {
         }
         post {
             try {
-                val entity = call.receive<Device>()
-                val notValid = entity.name.isBlank() || entity.typeId <= 0 || entity.userId <= 0
+                val entity = call.receive<StateType>()
+                val notValid = entity.name.isBlank() || entity.description.isBlank()
                 if (notValid) {
                     call.respond(HttpStatusCode.BadRequest, "Необходимо заполнить все поля")
                 } else {
-                    // TODO проверка UNIQUE у пользователя
+                    // TODO проверка UNIQUE
                     call.respond(dao.insert(entity))
                 }
             } catch (e: BadRequestException) {

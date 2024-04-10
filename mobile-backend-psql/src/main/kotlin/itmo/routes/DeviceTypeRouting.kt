@@ -6,22 +6,22 @@ import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import itmo.dao.UserDAO
-import itmo.models.User
+import itmo.dao.DeviceTypeDAO
+import itmo.models.DeviceType
 
-fun Route.userRouting() {
-    val dao = UserDAO()
+fun Route.deviceTypeRouting() {
+    val dao = DeviceTypeDAO()
 
-    route("users") {
+    route("device-types") {
         get {
             call.respond(dao.findAll())
         }
-        get("{login}") {
-            val login = call.parameters["login"]
-            if (login != null) {
-                val entity: User? = dao.findByLogin(login)
+        get("{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id != null) {
+                val entity: DeviceType? = dao.findById(id)
                 if (entity == null) {
-                    call.respond(HttpStatusCode.NotFound, "Пользователь с login=$login не найден")
+                    call.respond(HttpStatusCode.NotFound, "Тип устройства с id=$id не найден")
                 } else {
                     call.respond(entity)
                 }
@@ -29,8 +29,8 @@ fun Route.userRouting() {
         }
         post {
             try {
-                val entity = call.receive<User>()
-                val notValid = entity.login.isBlank() || entity.password.isBlank()
+                val entity = call.receive<DeviceType>()
+                val notValid = entity.name.isBlank()
                 if (notValid) {
                     call.respond(HttpStatusCode.BadRequest, "Необходимо заполнить все поля")
                 } else {
