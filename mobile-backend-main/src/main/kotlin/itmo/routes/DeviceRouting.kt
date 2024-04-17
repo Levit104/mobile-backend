@@ -37,22 +37,40 @@ fun Route.deviceRouting() {
                 call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
             }
         }
+
         get("{id}") {
             val principal = call.principal<JWTPrincipal>()
             val username = principal!!.payload.getClaim("username").asString()
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null && deviceRedisRepository.isItemExistsByUser(id.toString(), username)) {
                 call.respond(deviceRedisRepository.getItem(id.toString()))
-            } else {
-                call.respond(HttpStatusCode.Forbidden, "Устройство не существует или у вас нет доступа!")
             }
+
+            if (id != null) {
+                val response: HttpResponse = client.get("http://localhost:8080/devices/$id")
+                if (response.status == HttpStatusCode.OK) {
+                    call.respond(response.body<List<DeviceDAO>>())
+                }
+            }
+
+            call.respond(HttpStatusCode.Forbidden, "Устройство не существует или у вас нет доступа!")
         }
+
         post {
             val principal = call.principal<JWTPrincipal>()
             val username = principal!!.payload.getClaim("username").asString()
             val device = call.receive<DeviceDAO>()
-            deviceRedisRepository.addItem("1", device, 300000)
-            call.respond(HttpStatusCode.Created, "Устройство успешно добавлено!")
+
+            val response: HttpResponse = client.post("http://localhost:8080/devices") {
+                body = device
+            }
+            if (response.status == HttpStatusCode.OK) {
+                deviceRedisRepository.addItem(device.id, device, 300000)
+
+                call.respond(HttpStatusCode.OK, "Устройство успешно добавлено!")
+            } else {
+                call.respond(HttpStatusCode.BadRequest, "Произошла ошибка при добавлении устройства")
+            }
         }
     }
 }
