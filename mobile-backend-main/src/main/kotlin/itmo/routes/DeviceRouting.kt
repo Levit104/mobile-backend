@@ -34,7 +34,7 @@ fun Route.deviceRouting() {
 
             val response: HttpResponse = client.get("http://localhost:8080/devices") {
                 url {
-                    parameters.append("userId", userId)
+                    parameters.append("userId", userId.toString())
                 }
             }
             if (response.status == HttpStatusCode.OK) {
@@ -57,7 +57,7 @@ fun Route.deviceRouting() {
             if (id != null) {
                 val response: HttpResponse = client.get("http://localhost:8080/devices/$id") {
                     url {
-                        parameters.append("userId", userId)
+                        parameters.append("userId", userId.toString())
                     }
                 }
 

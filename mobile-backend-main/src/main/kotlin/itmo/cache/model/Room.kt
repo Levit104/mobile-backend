@@ -1,6 +1,7 @@
 package itmo.cache.model
 
 import itmo.cache.RedisRepository
+import kotlinx.serialization.Serializable
 
 // TODO: 10.04.2024
 @Serializable

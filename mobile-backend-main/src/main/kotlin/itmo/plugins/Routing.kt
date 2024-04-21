@@ -19,6 +19,8 @@ import itmo.routes.userRouting
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
+import itmo.routes.deviceTypeRouting
+import itmo.routes.roomRouting
 import kotlinx.serialization.json.Json
 import java.util.*
 
@@ -38,6 +40,8 @@ fun Application.configureRouting() {
         routing {
         authenticate {
             deviceRouting()
+            deviceTypeRouting()
+            roomRouting()
             userRouting()
         }
         post("/signUp") {
@@ -80,7 +84,7 @@ fun Application.configureRouting() {
                     .withAudience(Config.AUDIENCE.toString())
                     .withIssuer(Config.ISSUER.toString())
                     .withClaim("username", user.login)
-                    .withClaim("userId", userId)
+                    .withClaim("userId", user.id)
                     .withExpiresAt(Date(System.currentTimeMillis() + 30000000))
                     .sign(Algorithm.HMAC256(Config.SECRET.toString()))
                 call.respond(token)
