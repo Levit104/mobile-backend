@@ -11,7 +11,7 @@ fun Application.configureDatabase() {
         url = "jdbc:postgresql://localhost:5432/mobile",
         driver = "org.postgresql.Driver",
         user = "postgres",
-        password = "qwerty123"
+        password = "1112"
     )
     transaction(database) {
         SchemaUtils.create(Users)
