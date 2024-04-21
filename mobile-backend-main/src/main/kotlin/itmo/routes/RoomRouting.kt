@@ -11,6 +11,21 @@ fun Route.roomRouting() {
         get {
             val principal = call.principal<JWTPrincipal>()
             val username = principal!!.payload.getClaim("username").asString()
+            val response: HttpResponse = client.post("http://localhost:8080/devices") {
+                body = device
+            }
+            if (response.status == HttpStatusCode.OK) {
+                deviceRedisRepository.addItem(device.id, device, 300000)
+
+                call.respond(HttpStatusCode.OK, "Устройство успешно добавлено!")
+            } else {
+                call.respond(HttpStatusCode.BadRequest, "Произошла ошибка при добавлении устройства")
+            }
         }
+
+        get("{id}") {
+
+        }
+
     }
 }

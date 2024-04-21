@@ -80,6 +80,7 @@ fun Application.configureRouting() {
                     .withAudience(Config.AUDIENCE.toString())
                     .withIssuer(Config.ISSUER.toString())
                     .withClaim("username", user.login)
+                    .withClaim("userId", userId)
                     .withExpiresAt(Date(System.currentTimeMillis() + 30000000))
                     .sign(Algorithm.HMAC256(Config.SECRET.toString()))
                 call.respond(token)
