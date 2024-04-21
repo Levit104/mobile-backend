@@ -62,7 +62,7 @@ fun Route.deviceRouting() {
                 }
 
                 if (response.status == HttpStatusCode.OK) {
-                    call.respond(response.body<List<DeviceDAO>>())
+                    call.respond(response.body<DeviceDAO>())
                 }
             }
 
@@ -70,8 +70,6 @@ fun Route.deviceRouting() {
         }
 
         post {
-            val principal = call.principal<JWTPrincipal>()
-            val username = principal!!.payload.getClaim("username").asString()
             val device = call.receive<DeviceDAO>()
 
             val response: HttpResponse = client.post("http://localhost:8080/devices") {

@@ -2,7 +2,14 @@ package itmo.cache.model
 
 import itmo.cache.RedisRepository
 
-// TODO: 10.04.2024  
+// TODO: 10.04.2024
+@Serializable
+data class RoomDAO (
+    val id : Long,
+    val name : String,
+    val userId : Long
+)
+
 class RoomRedisRepository : RedisRepository<String, String> {
     override suspend fun addItem(roomId: String, roomName: String, time: Long) {
         jedis.set("room#$roomId", roomName)
