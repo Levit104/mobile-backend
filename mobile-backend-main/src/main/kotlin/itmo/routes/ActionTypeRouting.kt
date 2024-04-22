@@ -10,22 +10,23 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import itmo.cache.model.ActionTypeDAO
 import itmo.cache.model.DeviceTypeDAO
 import itmo.cache.model.RoomDAO
 import itmo.plugins.client
 
 // TODO: 10.04.2024
-fun Route.deviceTypeRouting() {
-    route("device-types") {
+fun Route.actionTypeRouting() {
+    route("action-types") {
 
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
             if (id != null) {
-                val response: HttpResponse = client.get("http://localhost:8080/device-types/$id")
+                val response: HttpResponse = client.get("http://localhost:8080/action-types/$id")
 
                 if (response.status == HttpStatusCode.OK) {
-                    call.respond(HttpStatusCode.OK, response.body<DeviceTypeDAO>())
+                    call.respond(HttpStatusCode.OK, response.body<ActionTypeDAO>())
                 } else {
                     call.respond(response.status, response.bodyAsText())
                 }
@@ -35,14 +36,14 @@ fun Route.deviceTypeRouting() {
         }
 
         post {
-            val deviceType = call.receive<DeviceTypeDAO>()
+            val actionTypeDAO = call.receive<ActionTypeDAO>()
 
-            val response: HttpResponse = client.post("http://localhost:8080/device-types") {
-                setBody(deviceType)
+            val response: HttpResponse = client.post("http://localhost:8080/action-types") {
+                setBody(actionTypeDAO)
             }
 
             if (response.status == HttpStatusCode.OK) {
-                call.respond(HttpStatusCode.OK, "Тип устройства успешно добавлен!")
+                call.respond(HttpStatusCode.OK, "Тип действия успешно добавлен!")
             } else {
                 call.respond(response.status, response.bodyAsText())
             }

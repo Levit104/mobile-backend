@@ -14,12 +14,10 @@ import io.ktor.server.routing.*
 import itmo.Config
 import itmo.cache.model.UserDAO
 import itmo.cache.model.UserRedisRepository
-import itmo.routes.deviceRouting
-import itmo.routes.userRouting
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
-import itmo.routes.deviceTypeRouting
+import itmo.routes.*
 import itmo.routes.roomRouting
 import kotlinx.serialization.json.Json
 import java.util.*
@@ -41,6 +39,10 @@ fun Application.configureRouting() {
         authenticate {
             deviceRouting()
             deviceTypeRouting()
+            stateTypeRouting()
+            stateRouting()
+            actionTypeRouting()
+            actionRouting()
             roomRouting()
             userRouting()
         }
