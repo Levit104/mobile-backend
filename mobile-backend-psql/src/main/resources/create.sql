@@ -76,8 +76,8 @@ CREATE TABLE script (
     device_id INTEGER REFERENCES device(id) NOT NULL,
     condition_id INTEGER REFERENCES condition(id) NOT NULL,
     action_id INTEGER REFERENCES action(id) NOT NULL,
-    condition_value VARCHAR(32) NOT NULL,
-    action_value VARCHAR(32) NOT NULL,
+    condition_value VARCHAR(128) NOT NULL,
+    action_value VARCHAR(128) NOT NULL,
     active boolean NOT NULL
 );
 

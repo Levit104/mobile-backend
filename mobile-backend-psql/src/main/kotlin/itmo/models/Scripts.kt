@@ -20,7 +20,7 @@ object Scripts : IntIdTable("script") {
     val deviceId = reference("device_id", Devices)
     val conditionId = reference("condition_id", Conditions)
     val actionId = reference("action_id", Actions)
-    val conditionValue = varchar("condition_value", 32)
-    val actionValue = varchar("action_value", 32)
-    val active = bool("status")
+    val conditionValue = varchar("condition_value", 128)
+    val actionValue = varchar("action_value", 128)
+    val active = bool("active")
 }
