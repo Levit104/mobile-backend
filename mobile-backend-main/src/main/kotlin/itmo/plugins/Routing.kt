@@ -14,11 +14,11 @@ import io.ktor.server.routing.*
 import itmo.Config
 import itmo.cache.model.UserDAO
 import itmo.cache.model.UserRedisRepository
-import itmo.routes.deviceRouting
-import itmo.routes.userRouting
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
+import itmo.routes.*
+import itmo.routes.roomRouting
 import kotlinx.serialization.json.Json
 import java.util.*
 
@@ -38,6 +38,12 @@ fun Application.configureRouting() {
         routing {
         authenticate {
             deviceRouting()
+            deviceTypeRouting()
+            stateTypeRouting()
+            stateRouting()
+            actionTypeRouting()
+            actionRouting()
+            roomRouting()
             userRouting()
         }
         post("/signUp") {
@@ -80,6 +86,7 @@ fun Application.configureRouting() {
                     .withAudience(Config.AUDIENCE.toString())
                     .withIssuer(Config.ISSUER.toString())
                     .withClaim("username", user.login)
+                    .withClaim("userId", user.id)
                     .withExpiresAt(Date(System.currentTimeMillis() + 30000000))
                     .sign(Algorithm.HMAC256(Config.SECRET.toString()))
                 call.respond(token)

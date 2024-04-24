@@ -1,7 +1,13 @@
 package itmo.cache.model
 
 import itmo.cache.RedisRepository
+import kotlinx.serialization.Serializable
 
+@Serializable
+data class DeviceTypeDAO(
+    val id: Int,
+    val name: String
+)
 class DeviceTypeRedisRepository : RedisRepository<String, String> {
     override suspend fun addItem(typeId: String, typeName: String, time: Long) {
         jedis.set("device_type#$typeId", typeName)
