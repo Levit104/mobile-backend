@@ -48,6 +48,8 @@ fun Application.configureRouting() {
             stateTypeRouting()
             stateRouting()
             actionTypeRouting()
+            conditionRouting()
+            scriptRouting()
             actionRouting()
             roomRouting()
             userRouting()
