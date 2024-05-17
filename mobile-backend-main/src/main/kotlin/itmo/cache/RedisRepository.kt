@@ -2,10 +2,11 @@ package itmo.cache
 
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPooled
 
 interface RedisRepository<T, V> {
     val jedis : Jedis
-        get() = JedisPool().resource
+        get() = Jedis()
 
     suspend fun addItem(name: String, item : T, time : Long = 60000)
 
