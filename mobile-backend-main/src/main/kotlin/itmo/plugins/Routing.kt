@@ -53,6 +53,7 @@ fun Application.configureRouting() {
             actionRouting()
             roomRouting()
             userRouting()
+            conditionRouting()
         }
         post("/signUp") {
             val user = call.receive<UserDAO>()
