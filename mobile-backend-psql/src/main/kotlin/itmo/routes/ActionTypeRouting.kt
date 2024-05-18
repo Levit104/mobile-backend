@@ -8,12 +8,14 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.dao.ActionTypeDAO
 import itmo.models.ActionType
+import itmo.util.log
 
 fun Route.actionTypeRouting() {
     val dao = ActionTypeDAO()
 
     route("action-types") {
         get {
+            log("action-types get", "-1", "get all", "success")
             call.respond(dao.findAll())
         }
         get("{id}") {
@@ -21,11 +23,14 @@ fun Route.actionTypeRouting() {
             if (id != null) {
                 val entity: ActionType? = dao.findById(id)
                 if (entity == null) {
+                    log("action-types get id", "-1", "Тип действия с id=$id не найден", "fail")
                     call.respond(HttpStatusCode.NotFound, "Тип действия с id=$id не найден")
                 } else {
+                    log("action-types get id", "-1", "get action-types ${entity.id}", "success")
                     call.respond(entity)
                 }
             }
+            log("action-types get id", "-1", "no id", "fail")
         }
         post {
             try {

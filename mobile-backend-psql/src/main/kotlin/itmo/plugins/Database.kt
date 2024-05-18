@@ -13,7 +13,7 @@ fun Application.configureDatabase() {
         jdbcUrl = "jdbc:postgresql://localhost:5432/mobile"
         driverClassName = "org.postgresql.Driver"
         username = "postgres"
-        password = "sobuka2100"
+        password = "1112"
         maximumPoolSize = 50
         isAllowPoolSuspension = true
         isAutoCommit = false

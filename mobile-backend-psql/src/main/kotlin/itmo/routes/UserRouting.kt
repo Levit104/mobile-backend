@@ -15,6 +15,7 @@ fun Route.userRouting() {
 
     route("users") {
         get {
+            log("user get", "-1", "get all", "success")
             call.respond(dao.findAll())
         }
         get("{login}") {
@@ -22,11 +23,14 @@ fun Route.userRouting() {
             if (login != null) {
                 val entity: User? = dao.findByLogin(login)
                 if (entity == null) {
+                    log("user get login", "-1", "No entity", "fail")
                     call.respond(HttpStatusCode.NotFound, "Пользователь с login=$login не найден")
                 } else {
+                    log("user get login", entity.id.toString(), "Get by login: " + login, "success")
                     call.respond(entity)
                 }
             }
+            log("user get login", "-1", "no login", "fail")
         }
         post {
             try {

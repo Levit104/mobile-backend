@@ -15,9 +15,4 @@ suspend fun log(event : String, userId: String, description: String, status: Str
         Date()
     ), description, status)
     jedis.publish("LoggerQueue", Json.encodeToString(message))
-//    jedis.subscribe(object : JedisPubSub() {
-//        override fun onMessage(channel : String, message : String) {
-//            println(message)
-//        }
-//    }, "test")
 }
