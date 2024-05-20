@@ -19,6 +19,7 @@ import itmo.Config
 import itmo.cache.model.UserDAO
 import itmo.cache.model.UserRedisRepository
 import itmo.routes.*
+import itmo.util.log
 import kotlinx.serialization.json.Json
 import java.util.*
 
@@ -58,6 +59,7 @@ fun Application.configureRouting() {
         post("/signUp") {
             val user = call.receive<UserDAO>()
             if (userRedisRepository.isItemExists(user.login)) {
+                log("signUp post cash", "-1", "Пользователь с таким логином существует!", "fail")
                 call.respond(HttpStatusCode.Conflict, "Пользователь с таким логином существует!")
             } else {
                 val response: HttpResponse = client.post("http://localhost:8080/users") {
@@ -65,10 +67,13 @@ fun Application.configureRouting() {
                     setBody(user)
                 }
                 if (response.status != HttpStatusCode.OK) {
+                    log("signUp post", "-1", "Ошибка при создании пользователя!", "fail")
                     call.respond(HttpStatusCode.Conflict, "Ошибка при создании пользователя!")
                 } else {
                     user.id = response.body<String>().toLong()
                     userRedisRepository.addItem(user.id.toString(), user, 30000000)
+
+                    log("signUp post", "${user.id}", "Пользователь с логином ${user.login} успешно создан!", "success")
                     call.respond(HttpStatusCode.Created, "Пользователь с логином ${user.login} успешно создан!")
                 }
             }
@@ -81,6 +86,8 @@ fun Application.configureRouting() {
                 val obj = userRedisRepository.getUserByLogin(user.login)
                 isAuthorized = obj["password"].equals(user.password)
                 userId = obj["id"].toString()
+
+                log("signIn post cash", userId, "Пользователь получен из кэша", "success")
             } else {
                 val response: HttpResponse = client.get("http://localhost:8080/users/${user.login}")
                 if (response.status == HttpStatusCode.OK) {
@@ -88,7 +95,10 @@ fun Application.configureRouting() {
                     isAuthorized = userDAO.password == user.password
                     userRedisRepository.addItem(userDAO.id.toString(), userDAO, 30000000)
                     userId = userDAO.id.toString()
+
+                    log("signIn post", userId, "Пользователь получен из бд", "success")
                 } else {
+                    log("signIn post", "-1", "Пользователь не существует", "fail")
                     call.respond(HttpStatusCode.Unauthorized, "Пользователь не существует")
                 }
             }
@@ -100,8 +110,11 @@ fun Application.configureRouting() {
                     .withClaim("userId", userId)
                     .withExpiresAt(Date(System.currentTimeMillis() + 30000000))
                     .sign(Algorithm.HMAC256(Config.SECRET.toString()))
+
+                log("signIn post", userId, "Токен создан $token", "success")
                 call.respond(token)
             } else {
+                log("signIn post", userId, "Неправильный логин или пароль", "fail")
                 call.respond(HttpStatusCode.Unauthorized, "Неправильный логин или пароль")
             }
         }
