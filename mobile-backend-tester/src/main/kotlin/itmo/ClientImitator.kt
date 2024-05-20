@@ -5,6 +5,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import itmo.models.User
+import itmo.util.log
 import org.slf4j.Logger
 
 class ClientImitator(private val id: Int) {
@@ -22,6 +23,7 @@ class ClientImitator(private val id: Int) {
                 contentType(ContentType.Application.Json)
                 setBody(User(login, password))
             }
+        log("signUp post", "$id", "Отправлен запрос на регистрацию", "success")
         println("reg $id")
 //        if (response.status == HttpStatusCode.OK)
 //            println("Imitator $id: пользователь зарегистрирован")
@@ -35,6 +37,7 @@ class ClientImitator(private val id: Int) {
                 setBody(User(login, password))
             }
 
+        log("signIn post", "$id", "Отправлен запрос на вход", "success")
             println("login $id")
 //        if (response.status == HttpStatusCode.OK) {
 //            jwt = response.bodyAsText()
