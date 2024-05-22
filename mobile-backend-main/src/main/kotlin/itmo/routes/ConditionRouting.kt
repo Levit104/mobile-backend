@@ -10,10 +10,26 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.cache.model.ConditionDAO
 import itmo.plugins.client
+import itmo.util.log
+import itmo.util.parseClaim
 
 // TODO: 10.04.2024
 fun Route.conditionRouting() {
     route("conditions") {
+
+        get {
+            val userId = parseClaim<String>("userId", call)
+
+            val response: HttpResponse = client.get("http://localhost:8080/conditions")
+
+            if (response.status == HttpStatusCode.OK) {
+                log("conditions get", userId, "Получены все условия", "success")
+                call.respond(HttpStatusCode.OK, response.body<ConditionDAO>())
+            } else {
+                log("conditions get", userId, response.bodyAsText(), "fail")
+                call.respond(response.status, response.bodyAsText())
+            }
+        }
 
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
