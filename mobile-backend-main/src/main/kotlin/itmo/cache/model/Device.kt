@@ -5,11 +5,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeviceDAO (
-    val id : Long,
+    val id : Long?,
     val name : String,
     val typeId : Long,
     val roomId : Long,
-    val userId : Long
+    val userId : Long?
     )
 
 class DeviceRedisRepository : RedisRepository<DeviceDAO, DeviceDAO> {

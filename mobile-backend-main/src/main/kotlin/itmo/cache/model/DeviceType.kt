@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeviceTypeDAO(
-    val id: Int,
+    val id: Int?,
     val name: String
 )
 class DeviceTypeRedisRepository : RedisRepository<String, String> {
