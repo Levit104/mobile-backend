@@ -16,10 +16,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.Config
-import itmo.cache.model.UserDAO
-import itmo.cache.model.UserRedisRepository
+import itmo.cache.model.*
 import itmo.routes.*
 import itmo.util.log
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.util.*
 
@@ -41,7 +41,32 @@ val client = HttpClient(CIO) {
     }
 }
 
+val actionRedisRepository = ActionRedisRepository()
+val deviceTypeRedisRepository = DeviceTypeRedisRepository()
+
 fun Application.configureRouting() {
+    launch {
+        val response: HttpResponse = client.get("http://localhost:8080/device-types")
+
+        if (response.status == HttpStatusCode.OK) {
+            log("device-types get", "-1", "Получены все типы устройств", "success")
+            val types = response.body<List<DeviceTypeDAO>>()
+            types.forEach { type ->  deviceTypeRedisRepository.addItem(type.id.toString(), type.name)}
+        } else {
+            log("device-types get", "-1", response.bodyAsText(), "fail")
+        }
+    }
+    launch {
+        val response: HttpResponse = client.get("http://localhost:8080/actions")
+
+        if (response.status == HttpStatusCode.OK) {
+            log("actions get", "-1", "Получены все действия", "success")
+            val actions = response.body<List<ActionDTO>>()
+            actions.forEach { action -> actionRedisRepository.addItem(action.id.toString(), action) }
+        } else {
+            log("actions get", "-1", response.bodyAsText(), "fail")
+        }
+    }
     routing {
         authenticate {
             deviceRouting()

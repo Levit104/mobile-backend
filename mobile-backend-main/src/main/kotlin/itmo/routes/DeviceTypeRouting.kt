@@ -10,6 +10,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.cache.model.DeviceTypeDAO
 import itmo.plugins.client
+import itmo.plugins.deviceTypeRedisRepository
 import itmo.util.log
 import itmo.util.parseClaim
 
@@ -19,6 +20,12 @@ fun Route.deviceTypeRouting() {
 
         get {
             val userId = parseClaim<String>("userId", call)
+
+            val types = deviceTypeRedisRepository.getItems()
+            if (types.isNotEmpty()) {
+                log("device-types get", userId, "Получены все типы устройств из кэша", "success")
+                call.respond(HttpStatusCode.OK, types)
+            }
 
             val response: HttpResponse = client.get("http://localhost:8080/device-types")
 
@@ -35,6 +42,10 @@ fun Route.deviceTypeRouting() {
             val id = call.parameters["id"]?.toIntOrNull()
 
             if (id != null) {
+                if (deviceTypeRedisRepository.isItemExists(id.toString())) {
+                    call.respond(HttpStatusCode.OK, deviceTypeRedisRepository.getItem(id.toString()))
+                }
+
                 val response: HttpResponse = client.get("http://localhost:8080/device-types/$id")
 
                 if (response.status == HttpStatusCode.OK) {
@@ -56,6 +67,7 @@ fun Route.deviceTypeRouting() {
             }
 
             if (response.status == HttpStatusCode.OK) {
+                deviceTypeRedisRepository.addItem(response.bodyAsText(), deviceType.name)
                 call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 call.respond(response.status, response.bodyAsText())

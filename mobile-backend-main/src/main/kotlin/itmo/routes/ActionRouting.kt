@@ -24,6 +24,11 @@ fun Route.actionRouting() {
 
             val deviceTypeId = call.request.queryParameters["deviceId"]?.toIntOrNull()
 
+            if (actionRedisRepository.isItemsExistsByDeviceTypeId(deviceTypeId.toString())) {
+                log("actions get", userId, "DeviceTypeId: $deviceTypeId", "success")
+                call.respond(actionRedisRepository.getItemsByDeviceTypeId(deviceTypeId.toString()))
+            }
+
             val response: HttpResponse = client.get("http://localhost:8080/actions") {
                 url {
                     parameters.append("deviceTypeId", deviceTypeId.toString())
@@ -46,6 +51,11 @@ fun Route.actionRouting() {
             val id = call.parameters["id"]?.toIntOrNull()
 
             if (id != null) {
+                if (actionRedisRepository.isItemExists(id.toString())) {
+                    log("actions get id", userId, "Получено действие $id", "success")
+                    call.respond(HttpStatusCode.OK, actionRedisRepository.getItem(id.toString()))
+                }
+
                 val response: HttpResponse = client.get("http://localhost:8080/actions/$id")
 
                 if (response.status == HttpStatusCode.OK) {

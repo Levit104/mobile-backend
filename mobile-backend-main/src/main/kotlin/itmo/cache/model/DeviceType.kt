@@ -8,6 +8,7 @@ data class DeviceTypeDAO(
     val id: Int?,
     val name: String
 )
+
 class DeviceTypeRedisRepository : RedisRepository<String, String> {
     override suspend fun addItem(typeId: String, typeName: String, time: Long) {
         jedis.set("device_type#$typeId", typeName)
@@ -22,8 +23,12 @@ class DeviceTypeRedisRepository : RedisRepository<String, String> {
         return jedis.exists("device_type#$typeId")
     }
 
-    fun getItems() : Map<String, String> {
+    fun getItems(): List<DeviceTypeDAO> {
         val set = jedis.smembers("device_types")
-        return set.associateWith { s -> jedis.get("device_type#$s") }
+        val types = ArrayList<DeviceTypeDAO>()
+        set.forEach { s ->
+            types.add(DeviceTypeDAO(s.toInt(), jedis.get("device_type#$s")))
+        }
+        return types
     }
 }
