@@ -91,5 +91,30 @@ fun Route.deviceRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Произошла ошибка при добавлении устройства")
             }
         }
+
+        delete {
+            val userId = parseClaim<String>("userId", call)
+
+            val deviceId = call.request.queryParameters["deviceId"]?.toIntOrNull()
+
+            if (deviceId == null) {
+                val response: HttpResponse = client.delete("http://localhost:8080/devices") {
+                    url {
+                        parameters.append("deviceId", deviceId.toString())
+                    }
+                }
+
+                if (response.status == HttpStatusCode.OK) {
+                    log("devices delete", userId, "Успешно удалилось", "success")
+                    call.respond(HttpStatusCode.OK, "Успешно удалилось")
+                } else {
+                    log("devices delete", userId, "Не удалось удалить $deviceId", "fail")
+                    call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
+                }
+            }
+
+            log("devices delete", userId, "Нет id", "fail")
+            call.respond(HttpStatusCode.BadRequest, "Нет id")
+        }
     }
 }

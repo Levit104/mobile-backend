@@ -73,5 +73,30 @@ fun Route.roomRouting() {
                 call.respond(response.status, response.bodyAsText())
             }
         }
+
+        delete {
+            val userId = parseClaim<String>("userId", call)
+
+            val roomId = call.request.queryParameters["roomId"]?.toIntOrNull()
+
+            if (roomId == null) {
+                val response: HttpResponse = client.delete("http://localhost:8080/devices") {
+                    url {
+                        parameters.append("roomId", roomId.toString())
+                    }
+                }
+
+                if (response.status == HttpStatusCode.OK) {
+                    log("room delete", userId, "Успешно удалилась", "success")
+                    call.respond(HttpStatusCode.OK, "Успешно удалилась")
+                } else {
+                    log("room delete", userId, "Не удалось удалить $roomId", "fail")
+                    call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
+                }
+            }
+
+            log("room delete", userId, "Нет id", "fail")
+            call.respond(HttpStatusCode.BadRequest, "Нет id")
+        }
     }
 }

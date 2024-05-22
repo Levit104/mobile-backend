@@ -12,5 +12,6 @@ suspend fun log(event : String, userId: String, description: String, status: Str
     val message = MessageLogDao("localhost", "test", userId, event, SimpleDateFormat("dd/M/yyyy hh:mm:ss").format(
         Date()
     ), description, status)
+    println(message)
     JedisPool().resource.publish("LoggerQueue", Json.encodeToString(message))
 }
