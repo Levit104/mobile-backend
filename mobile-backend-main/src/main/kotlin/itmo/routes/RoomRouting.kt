@@ -16,7 +16,7 @@ import itmo.util.log
 
 // TODO: 10.04.2024  
 fun Route.roomRouting() {
-    route("room") {
+    route("rooms") {
         get {
             val principal = call.principal<JWTPrincipal>()
             val userId = principal!!.payload.getClaim("userId").asInt()
@@ -63,6 +63,7 @@ fun Route.roomRouting() {
             val userId = principal!!.payload.getClaim("userId").asInt()
 
             val response: HttpResponse = client.post("http://localhost:8080/rooms") {
+                contentType(ContentType.Application.Json)
                 setBody(room)
             }
 

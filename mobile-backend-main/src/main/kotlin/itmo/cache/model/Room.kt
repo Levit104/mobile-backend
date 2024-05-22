@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 // TODO: 10.04.2024
 @Serializable
 data class RoomDAO (
-    val id : Long,
+    val id : Long?,
     val name : String,
     val userId : Long
 )

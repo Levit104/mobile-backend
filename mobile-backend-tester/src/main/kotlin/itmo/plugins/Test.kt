@@ -10,7 +10,7 @@ suspend fun startTest() {
         val job = launch {
             repeat(1000) { index ->
                 launch {
-                    ClientImitator(index).init()
+                    ClientImitator(index + 1).init()
                 }
             }
         }
