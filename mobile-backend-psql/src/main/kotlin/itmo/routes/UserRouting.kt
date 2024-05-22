@@ -26,7 +26,7 @@ fun Route.userRouting() {
                     log("user get login", "-1", "No entity", "fail")
                     call.respond(HttpStatusCode.NotFound, "Пользователь с login=$login не найден")
                 } else {
-                    log("user get login", entity.id.toString(), "Get by login: " + login, "success")
+                    log("user get login", entity.id.toString(), "Get by login: $login", "success")
                     call.respond(entity)
                 }
             }

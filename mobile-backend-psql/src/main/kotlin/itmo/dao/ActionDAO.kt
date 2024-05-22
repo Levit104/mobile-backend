@@ -12,8 +12,10 @@ import org.jetbrains.exposed.sql.selectAll
 class ActionDAO : BasicDAO<Action> {
     private fun resultRowToAction(row: ResultRow): Action = Action(
         id = row[Actions.id].value,
-        actionTypeId = row[Actions.actionTypeId].value,
-        deviceTypeId = row[Actions.deviceTypeId].value
+        name = row[Actions.name],
+        deviceTypeId = row[Actions.deviceTypeId].value,
+        stateTypeId = row[Actions.stateTypeId].value,
+        parameterMode = row[Actions.parameterMode]
     )
 
     override suspend fun findAll(): List<Action> = dbQuery {
@@ -26,8 +28,10 @@ class ActionDAO : BasicDAO<Action> {
 
     override suspend fun insert(entity: Action): Int = dbQuery {
         Actions.insert {
-            it[actionTypeId] = entity.actionTypeId
+            it[name] = entity.name
             it[deviceTypeId] = entity.deviceTypeId
+            it[stateTypeId] = entity.stateTypeId
+            it[parameterMode] = entity.parameterMode
         }[Actions.id].value
     }
 

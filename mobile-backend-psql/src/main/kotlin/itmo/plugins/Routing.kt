@@ -14,7 +14,6 @@ fun Application.configureRouting() {
         statisticRouting()
         stateTypeRouting()
         stateRouting()
-        actionTypeRouting()
         actionRouting()
         conditionRouting()
         scriptRouting()

@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.application.*
 import itmo.models.*
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -30,7 +29,6 @@ fun Application.configureDatabase() {
         SchemaUtils.create(Statistics)
         SchemaUtils.create(StateTypes)
         SchemaUtils.create(States)
-        SchemaUtils.create(ActionTypes)
         SchemaUtils.create(Actions)
         SchemaUtils.create(Conditions)
         SchemaUtils.create(Scripts)

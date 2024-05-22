@@ -47,12 +47,13 @@ fun Route.actionRouting() {
         post {
             try {
                 val entity = call.receive<Action>()
-                val notValid = entity.actionTypeId <= 0 && entity.deviceTypeId <= 0
+                val notValid = entity.name.isBlank() || entity.deviceTypeId <= 0 || entity.stateTypeId <= 0
                 if (notValid) {
                     log("actions post", "-1", "Необходимо заполнить все поля", "fail")
                     call.respond(HttpStatusCode.BadRequest, "Необходимо заполнить все поля")
                 } else {
-                    log("actions post", "-1", "Insert action deviceTypeId =  ${entity.deviceTypeId} actionTypeId ${entity.actionTypeId}", "success")
+                    log("actions post", "-1", "Insert action " + "name = ${entity.name} " +
+                            "deviceTypeId =  ${entity.deviceTypeId}" + "stateTypeId = ${entity.stateTypeId}", "success")
                     call.respond(dao.insert(entity))
                 }
             } catch (e: BadRequestException) {
