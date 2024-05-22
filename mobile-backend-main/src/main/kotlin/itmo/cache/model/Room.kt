@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class RoomDAO (
     val id : Long?,
     val name : String,
-    val userId : Long
+    val userId : Long?
 )
 
 class RoomRedisRepository : RedisRepository<String, String> {
