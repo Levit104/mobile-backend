@@ -46,7 +46,6 @@ fun Application.configureRouting() {
         authenticate {
             deviceRouting()
             deviceTypeRouting()
-            stateTypeRouting()
             stateRouting()
             conditionRouting()
             scriptRouting()
@@ -83,8 +82,8 @@ fun Application.configureRouting() {
             var userId = ""
             if (userRedisRepository.isItemExists(user.login)) {
                 val obj = userRedisRepository.getUserByLogin(user.login)
-                isAuthorized = obj["password"].equals(user.password)
-                userId = obj["id"].toString()
+                isAuthorized = obj.password.equals(user.password)
+                userId = obj.id.toString()
 
                 log("signIn post cash", userId, "Пользователь получен из кэша", "success")
             } else {

@@ -8,14 +8,21 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import itmo.cache.model.DeviceDAO
-import itmo.cache.model.DeviceRedisRepository
+import itmo.cache.model.*
 import itmo.plugins.client
 import itmo.util.log
 import itmo.util.parseClaim
 
 
 val deviceRedisRepository = DeviceRedisRepository()
+val actionRedisRepository = ActionRedisRepository()
+val stateRedisRepository = StateRedisRepository()
+
+suspend fun addDeviceToRedis(deviceInfo: DeviceInfo) {
+    deviceRedisRepository.addItem(deviceInfo.device.id.toString(), deviceInfo.device)
+    deviceInfo.actions.forEach { action -> actionRedisRepository.addRelation(deviceInfo.device.id.toString(), action.id.toString()) }
+    deviceInfo.states.forEach { state -> stateRedisRepository.addItem(state.id.toString(), state) }
+}
 
 // TODO: 10.04.2024  
 fun Route.deviceRouting() {
@@ -52,9 +59,18 @@ fun Route.deviceRouting() {
             val userId = parseClaim<String>("userId", call)
             val id = call.parameters["id"]?.toIntOrNull()
 
-            if (id != null && deviceRedisRepository.isItemExistsByUser(id.toString(), username)) {
+            if (id != null &&
+                deviceRedisRepository.isItemExistsByUser(id.toString(), username) &&
+                stateRedisRepository.isItemsExistsByDeviceId(id.toString()) &&
+                actionRedisRepository.isItemsExistsByDeviceTypeId(deviceRedisRepository.getItem(id.toString()).typeId.toString())
+            ) {
+                val device = deviceRedisRepository.getItem(id.toString())
                 log("devices get id cash", userId, "Устройство получено из кэша id $id", "success")
-                call.respond(deviceRedisRepository.getItem(id.toString()))
+                val actions = actionRedisRepository.getItemsByDeviceTypeId(device.typeId.toString())
+                log("devices get id cash", userId, "Действия получены из кэша id $id", "success")
+                val states = stateRedisRepository.getItemsByDeviceId(id.toString())
+                log("devices get id cash", userId, "Состояния получены из кэша id $id", "success")
+                call.respond(DeviceInfo(device, actions, states))
             }
 
             if (id != null) {
@@ -66,7 +82,9 @@ fun Route.deviceRouting() {
 
                 if (response.status == HttpStatusCode.OK) {
                     log("devices get id", userId, "Устройство получено успешно id $id", "success")
-                    call.respond(response.body<DeviceDAO>())
+                    val deviceInfo = response.body<DeviceInfo>()
+                    addDeviceToRedis(deviceInfo)
+                    call.respond(deviceInfo)
                 }
             }
 
@@ -85,6 +103,8 @@ fun Route.deviceRouting() {
 
             if (response.status == HttpStatusCode.OK) {
                 log("devices post", userId, "Устройство успешно добавлено! ${device.name}", "success")
+                val deviceInfo = response.body<DeviceInfo>()
+                addDeviceToRedis(deviceInfo)
                 call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 log("devices post", userId, "Произошла ошибка при добавлении устройства ${device.name}", "fail")

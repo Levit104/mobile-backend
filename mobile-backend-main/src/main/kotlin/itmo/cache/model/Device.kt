@@ -12,7 +12,7 @@ data class DeviceDAO (
     val userId : Long
     )
 
-class DeviceRedisRepository : RedisRepository<DeviceDAO, Map<String, String>> {
+class DeviceRedisRepository : RedisRepository<DeviceDAO, DeviceDAO> {
     override suspend fun addItem(deviceId: String, item: DeviceDAO, time: Long) {
         jedis.hset("device#$deviceId", "id", item.id.toString())
         jedis.hset("device#$deviceId", "name", item.name)
@@ -24,15 +24,22 @@ class DeviceRedisRepository : RedisRepository<DeviceDAO, Map<String, String>> {
         jedis.pexpire("user_device#${item.userId}", time)
     }
 
-    override suspend fun getItem(deviceId : String): Map<String, String> {
-        return jedis.hgetAll("device#$deviceId")
+    override suspend fun getItem(deviceId : String): DeviceDAO {
+        val map = jedis.hgetAll("device#$deviceId")
+        return DeviceDAO(
+            map["id"]!!.toLong(),
+            map["name"]!!,
+            map["typeId"]!!.toLong(),
+            map["roomId"]!!.toLong(),
+            map["userId"]!!.toLong(),
+        )
     }
 
     override suspend fun isItemExists(deviceId : String): Boolean {
         return jedis.exists("device#$deviceId")
     }
 
-    suspend fun getItemsByUser(userId: String) : List<Map<String, String>> {
+    suspend fun getItemsByUser(userId: String) : List<DeviceDAO> {
         val set = jedis.smembers("user_device#$userId")
         return set.map { s -> this.getItem(s) }
     }

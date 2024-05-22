@@ -15,6 +15,16 @@ import itmo.plugins.client
 fun Route.stateRouting() {
     route("states") {
 
+        get {
+            val response: HttpResponse = client.get("http://localhost:8080/states")
+
+            if (response.status == HttpStatusCode.OK) {
+                call.respond(HttpStatusCode.OK, response.body<StateDAO>())
+            } else {
+                call.respond(response.status, response.bodyAsText())
+            }
+        }
+
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
@@ -45,7 +55,7 @@ fun Route.stateRouting() {
             }
         }
 
-            //TODO: Добавить в psql
+        //TODO: Добавить в psql
         put {
             val stateDAO = call.receive<StateDAO>()
 
