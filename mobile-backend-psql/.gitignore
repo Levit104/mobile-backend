@@ -24,6 +24,7 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+/target/
 
 ### NetBeans ###
 /nbproject/private/
@@ -34,6 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-/target/
-/target/
-/.idea/
