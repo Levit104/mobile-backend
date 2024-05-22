@@ -117,7 +117,7 @@ fun Route.deviceRouting() {
 
             val deviceId = call.request.queryParameters["deviceId"]?.toIntOrNull()
 
-            if (deviceId == null) {
+            if (deviceId !== null) {
                 val response: HttpResponse = client.delete("http://localhost:8080/devices") {
                     url {
                         parameters.append("deviceId", deviceId.toString())

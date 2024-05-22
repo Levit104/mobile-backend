@@ -79,7 +79,7 @@ fun Route.roomRouting() {
 
             val roomId = call.request.queryParameters["roomId"]?.toIntOrNull()
 
-            if (roomId == null) {
+            if (roomId !== null) {
                 val response: HttpResponse = client.delete("http://localhost:8080/devices") {
                     url {
                         parameters.append("roomId", roomId.toString())
