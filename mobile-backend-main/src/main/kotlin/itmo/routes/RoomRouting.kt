@@ -12,6 +12,7 @@ import itmo.cache.model.RoomDAO
 import itmo.plugins.client
 import itmo.util.log
 import itmo.util.parseClaim
+import itmo.util.sendPost
 
 // TODO: 10.04.2024  
 fun Route.roomRouting() {
@@ -49,21 +50,20 @@ fun Route.roomRouting() {
                     log("room get id", userId, "${response.bodyAsText()} id $id", "fail")
                     call.respond(response.status, response.bodyAsText())
                 }
+            } else {
+                log("room get id", userId, "Нет id", "fail")
+                call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
-
-            log("room get id", userId, "Нет id", "fail")
-            call.respond(HttpStatusCode.BadRequest, "Нет id")
         }
-
         post {
             val room = call.receive<RoomDAO>()
-            
+
             val userId = parseClaim<String>("userId", call)
 
-            val response: HttpResponse = client.post("http://localhost:8080/rooms") {
-                contentType(ContentType.Application.Json)
-                setBody(room)
-            }
+            val response: HttpResponse = sendPost(
+                "http://localhost:8080/rooms",
+                RoomDAO(null, room.name, userId.toLong())
+            )
 
             if (response.status == HttpStatusCode.OK) {
                 log("room post", userId, "Комната успешно добавлена! ${room.name}", "success")
@@ -80,7 +80,7 @@ fun Route.roomRouting() {
             val roomId = call.request.queryParameters["roomId"]?.toIntOrNull()
 
             if (roomId !== null) {
-                val response: HttpResponse = client.delete("http://localhost:8080/devices") {
+                val response: HttpResponse = client.delete("http://localhost:8080/rooms") {
                     url {
                         parameters.append("roomId", roomId.toString())
                     }
@@ -93,10 +93,10 @@ fun Route.roomRouting() {
                     log("room delete", userId, "Не удалось удалить $roomId", "fail")
                     call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
                 }
+            } else {
+                log("room delete", userId, "Нет id", "fail")
+                call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
-
-            log("room delete", userId, "Нет id", "fail")
-            call.respond(HttpStatusCode.BadRequest, "Нет id")
         }
     }
 }

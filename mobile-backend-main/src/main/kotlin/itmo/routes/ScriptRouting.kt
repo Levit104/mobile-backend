@@ -11,12 +11,12 @@ import io.ktor.server.routing.*
 import itmo.cache.model.ScriptDao
 import itmo.plugins.client
 import itmo.util.parseClaim
+import itmo.util.sendPost
 
 // TODO: 10.04.2024
 fun Route.scriptRouting() {
     route("scripts") {
         get {
-            
             val userId = parseClaim<String>("userId", call)
 
             val response: HttpResponse = client.get("http://localhost:8080/scripts") {
@@ -30,7 +30,6 @@ fun Route.scriptRouting() {
                 call.respond(response.status, response.bodyAsText())
             }
         }
-
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
@@ -42,17 +41,14 @@ fun Route.scriptRouting() {
                 } else {
                     call.respond(response.status, response.bodyAsText())
                 }
+            } else {
+                call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
-
-            call.respond(HttpStatusCode.BadRequest, "Нет id")
         }
-
         post {
             val script = call.receive<ScriptDao>()
 
-            val response: HttpResponse = client.post("http://localhost:8080/scripts") {
-                setBody(script)
-            }
+            val response: HttpResponse = sendPost("http://localhost:8080/scripts", script)
 
             if (response.status == HttpStatusCode.OK) {
                 call.respond(HttpStatusCode.OK, response.bodyAsText())

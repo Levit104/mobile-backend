@@ -14,7 +14,7 @@ fun Application.configureSecurity() {
     authentication {
         jwt {
             realm = Config.REALM.toString()
-            
+
             verifier(
                 JWT
                     .require(Algorithm.HMAC256(Config.SECRET.toString()))

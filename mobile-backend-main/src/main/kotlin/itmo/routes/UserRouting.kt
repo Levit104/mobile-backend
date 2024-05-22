@@ -9,7 +9,7 @@ import itmo.util.parseClaim
 fun Route.userRouting() {
     route("user") {
         get {
-            
+
             val username = parseClaim<String>("username", call)
             val userId = parseClaim<String>("userId", call)
 

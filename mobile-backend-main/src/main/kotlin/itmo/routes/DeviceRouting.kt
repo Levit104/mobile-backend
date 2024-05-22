@@ -10,9 +10,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.cache.model.*
 import itmo.plugins.client
+import itmo.plugins.userRedisRepository
 import itmo.util.log
 import itmo.util.parseClaim
-
+import itmo.util.sendPost
 
 val deviceRedisRepository = DeviceRedisRepository()
 val actionRedisRepository = ActionRedisRepository()
@@ -33,7 +34,6 @@ suspend fun addDeviceToRedis(deviceInfo: DeviceInfo) {
 fun Route.deviceRouting() {
     route("devices") {
         get {
-
             val username = parseClaim<String>("username", call)
             val userId = parseClaim<String>("userId", call)
 
@@ -42,24 +42,22 @@ fun Route.deviceRouting() {
                     log("devices get cash", userId, "Устройства получены из кэша", "success")
                     call.respond(deviceRedisRepository.getItemsByUser(userId))
                 }
-            }
-
-            val response: HttpResponse = client.get("http://localhost:8080/devices") {
-                url {
-                    parameters.append("userId", userId)
+            } else {
+                val response: HttpResponse = client.get("http://localhost:8080/devices") {
+                    url {
+                        parameters.append("userId", userId)
+                    }
+                }
+                if (response.status == HttpStatusCode.OK) {
+                    log("devices get", userId, "Устройства получены успешно", "success")
+                    call.respond(response.body<List<DeviceDAO>>())
+                } else {
+                    log("devices get", userId, "Ошибочка, какая хз", "fail")
+                    call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
                 }
             }
-            if (response.status == HttpStatusCode.OK) {
-                log("devices get", userId, "Устройства получены успешно", "success")
-                call.respond(response.body<List<DeviceDAO>>())
-            } else {
-                log("devices get", userId, "Ошибочка, какая хз", "fail")
-                call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
-            }
         }
-
         get("{id}") {
-
             val username = parseClaim<String>("username", call)
             val userId = parseClaim<String>("userId", call)
             val id = call.parameters["id"]?.toIntOrNull()
@@ -76,9 +74,7 @@ fun Route.deviceRouting() {
                 val states = stateRedisRepository.getItemsByDeviceId(id.toString())
                 log("devices get id cash", userId, "Состояния получены из кэша id $id", "success")
                 call.respond(DeviceInfo(device, actions, states))
-            }
-
-            if (id != null) {
+            } else if (id != null) {
                 val response: HttpResponse = client.get("http://localhost:8080/devices/$id") {
                     url {
                         parameters.append("userId", userId)
@@ -91,10 +87,10 @@ fun Route.deviceRouting() {
                     addDeviceToRedis(deviceInfo)
                     call.respond(deviceInfo)
                 }
+            } else {
+                log("devices get id", userId, "Устройство не существует или у вас нет доступа!", "fail")
+                call.respond(HttpStatusCode.Forbidden, "Устройство не существует или у вас нет доступа!")
             }
-
-            log("devices get id", userId, "Устройство не существует или у вас нет доступа!", "fail")
-            call.respond(HttpStatusCode.Forbidden, "Устройство не существует или у вас нет доступа!")
         }
 
         post {
@@ -102,10 +98,10 @@ fun Route.deviceRouting() {
 
             val userId = parseClaim<String>("userId", call)
 
-            val response: HttpResponse = client.post("http://localhost:8080/devices") {
-                contentType(ContentType.Application.Json)
-                setBody(device)
-            }
+            val response: HttpResponse = sendPost(
+                "http://localhost:8080/devices",
+                DeviceDAO(null, device.name, device.typeId, device.roomId, userId.toLong())
+            )
 
             if (response.status == HttpStatusCode.OK) {
                 log("devices post", userId, "Устройство успешно добавлено! ${device.name}", "success")
@@ -137,10 +133,10 @@ fun Route.deviceRouting() {
                     log("devices delete", userId, "Не удалось удалить $deviceId", "fail")
                     call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
                 }
+            } else {
+                log("devices delete", userId, "Нет id", "fail")
+                call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
-
-            log("devices delete", userId, "Нет id", "fail")
-            call.respond(HttpStatusCode.BadRequest, "Нет id")
         }
     }
 }

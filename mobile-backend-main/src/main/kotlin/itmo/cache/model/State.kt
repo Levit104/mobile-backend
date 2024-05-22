@@ -26,7 +26,7 @@ class StateRedisRepository : RedisRepository<StateDAO, StateDAO> {
         return jedis.exists("state#$name")
     }
 
-    private fun addRelation(deviceId: String, stateId: String, time: Long = 60000) {
+    private fun addRelation(deviceId: String, stateId: String, time: Long = 600_000) {
         jedis.sadd("device_state#$deviceId", stateId)
         jedis.pexpire("device_state#$deviceId", time)
     }

@@ -19,8 +19,10 @@ import itmo.Config
 import itmo.cache.model.*
 import itmo.routes.*
 import itmo.util.log
+import itmo.util.sendPost
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import redis.clients.jedis.Jedis
 import java.util.*
 
 
@@ -45,13 +47,14 @@ val actionRedisRepository = ActionRedisRepository()
 val deviceTypeRedisRepository = DeviceTypeRedisRepository()
 
 fun Application.configureRouting() {
+    Jedis().flushAll()
     launch {
         val response: HttpResponse = client.get("http://localhost:8080/device-types")
 
         if (response.status == HttpStatusCode.OK) {
             log("device-types get", "-1", "Получены все типы устройств", "success")
             val types = response.body<List<DeviceTypeDAO>>()
-            types.forEach { type ->  deviceTypeRedisRepository.addItem(type.id.toString(), type.name)}
+            types.forEach { type -> deviceTypeRedisRepository.addItem(type.id.toString(), type.name) }
         } else {
             log("device-types get", "-1", response.bodyAsText(), "fail")
         }
@@ -85,10 +88,7 @@ fun Application.configureRouting() {
                 log("signUp post cash", "-1", "Пользователь с таким логином существует!", "fail")
                 call.respond(HttpStatusCode.Conflict, "Пользователь с таким логином существует!")
             } else {
-                val response: HttpResponse = client.post("http://localhost:8080/users") {
-                    contentType(ContentType.Application.Json)
-                    setBody(user)
-                }
+                val response: HttpResponse = sendPost("http://localhost:8080/users", user)
                 if (response.status != HttpStatusCode.OK) {
                     log("signUp post", "-1", "Ошибка при создании пользователя!", "fail")
                     call.respond(HttpStatusCode.Conflict, "Ошибка при создании пользователя!")

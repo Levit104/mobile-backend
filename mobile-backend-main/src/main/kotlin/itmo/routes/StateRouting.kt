@@ -10,11 +10,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.cache.model.StateDAO
 import itmo.plugins.client
+import itmo.util.sendPost
 
 // TODO: 10.04.2024
 fun Route.stateRouting() {
     route("states") {
-
         get {
             val response: HttpResponse = client.get("http://localhost:8080/states")
 
@@ -24,7 +24,6 @@ fun Route.stateRouting() {
                 call.respond(response.status, response.bodyAsText())
             }
         }
-
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
@@ -36,17 +35,14 @@ fun Route.stateRouting() {
                 } else {
                     call.respond(response.status, response.bodyAsText())
                 }
+            } else {
+                call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
-
-            call.respond(HttpStatusCode.BadRequest, "Нет id")
         }
-
         post {
             val stateDAO = call.receive<StateDAO>()
 
-            val response: HttpResponse = client.post("http://localhost:8080/states") {
-                setBody(stateDAO)
-            }
+            val response: HttpResponse = sendPost("http://localhost:8080/states", stateDAO)
 
             if (response.status == HttpStatusCode.OK) {
                 call.respond(HttpStatusCode.OK, response.bodyAsText())
@@ -55,11 +51,11 @@ fun Route.stateRouting() {
             }
         }
 
-        //TODO: Добавить в psql
         put {
             val stateDAO = call.receive<StateDAO>()
 
             val response: HttpResponse = client.put("http://localhost:8080/states") {
+                contentType(ContentType.Application.Json)
                 setBody(stateDAO)
             }
 

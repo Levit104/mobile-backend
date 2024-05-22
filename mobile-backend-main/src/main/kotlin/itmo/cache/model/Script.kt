@@ -3,7 +3,7 @@ package itmo.cache.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ScriptDao (
+data class ScriptDao(
     val id: Int?,
     val userId: Int,
     val deviceId: Int,

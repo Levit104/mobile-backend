@@ -35,7 +35,7 @@ class ActionRedisRepository : RedisRepository<ActionDTO, ActionDTO> {
         return jedis.exists("action#$name")
     }
 
-    fun addRelation(deviceTypeId: String, actionId: String, time: Long = 60000) {
+    fun addRelation(deviceTypeId: String, actionId: String, time: Long = 600_000) {
         jedis.sadd("deviceType_action#$deviceTypeId", actionId)
         jedis.pexpire("deviceType_action#$deviceTypeId", time)
     }

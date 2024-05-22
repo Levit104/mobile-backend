@@ -4,13 +4,13 @@ import itmo.cache.RedisRepository
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DeviceDAO (
-    val id : Long?,
-    val name : String,
-    val typeId : Long,
-    val roomId : Long,
-    val userId : Long?
-    )
+data class DeviceDAO(
+    val id: Long?,
+    val name: String,
+    val typeId: Long,
+    val roomId: Long,
+    val userId: Long?
+)
 
 class DeviceRedisRepository : RedisRepository<DeviceDAO, DeviceDAO> {
     override suspend fun addItem(deviceId: String, item: DeviceDAO, time: Long) {
@@ -24,7 +24,7 @@ class DeviceRedisRepository : RedisRepository<DeviceDAO, DeviceDAO> {
         jedis.pexpire("user_device#${item.userId}", time)
     }
 
-    override suspend fun getItem(deviceId : String): DeviceDAO {
+    override suspend fun getItem(deviceId: String): DeviceDAO {
         val map = jedis.hgetAll("device#$deviceId")
         return DeviceDAO(
             map["id"]!!.toLong(),
@@ -35,20 +35,20 @@ class DeviceRedisRepository : RedisRepository<DeviceDAO, DeviceDAO> {
         )
     }
 
-    override suspend fun isItemExists(deviceId : String): Boolean {
+    override suspend fun isItemExists(deviceId: String): Boolean {
         return jedis.exists("device#$deviceId")
     }
 
-    suspend fun getItemsByUser(userId: String) : List<DeviceDAO> {
+    suspend fun getItemsByUser(userId: String): List<DeviceDAO> {
         val set = jedis.smembers("user_device#$userId")
         return set.map { s -> this.getItem(s) }
     }
 
-    fun isItemsExistsByUser(userId: String) : Boolean{
+    fun isItemsExistsByUser(userId: String): Boolean {
         return jedis.exists("user_device$userId")
     }
 
-    fun isItemExistsByUser(deviceId: String, username : String) : Boolean {
+    fun isItemExistsByUser(deviceId: String, username: String): Boolean {
         val userId = jedis.get("username#$username")
         return jedis.sismember("user_device#$userId", deviceId)
     }

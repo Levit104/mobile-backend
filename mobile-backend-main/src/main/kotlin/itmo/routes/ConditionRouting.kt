@@ -12,11 +12,11 @@ import itmo.cache.model.ConditionDAO
 import itmo.plugins.client
 import itmo.util.log
 import itmo.util.parseClaim
+import itmo.util.sendPost
 
 // TODO: 10.04.2024
 fun Route.conditionRouting() {
     route("conditions") {
-
         get {
             val userId = parseClaim<String>("userId", call)
 
@@ -30,7 +30,6 @@ fun Route.conditionRouting() {
                 call.respond(response.status, response.bodyAsText())
             }
         }
-
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
@@ -42,17 +41,15 @@ fun Route.conditionRouting() {
                 } else {
                     call.respond(response.status, response.bodyAsText())
                 }
+            } else {
+                call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
-
-            call.respond(HttpStatusCode.BadRequest, "Нет id")
         }
 
         post {
             val condition = call.receive<ConditionDAO>()
 
-            val response: HttpResponse = client.post("http://localhost:8080/conditions") {
-                setBody(condition)
-            }
+            val response: HttpResponse = sendPost("http://localhost:8080/conditions", condition)
 
             if (response.status == HttpStatusCode.OK) {
                 call.respond(HttpStatusCode.OK, response.bodyAsText())
