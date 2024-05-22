@@ -12,14 +12,14 @@ fun Application.configureDatabase() {
         jdbcUrl = "jdbc:postgresql://localhost:5432/mobile"
         driverClassName = "org.postgresql.Driver"
         username = "postgres"
-        password = "1112"
+        password = "qwerty123"
         maximumPoolSize = 50
         isAllowPoolSuspension = true
         isAutoCommit = false
     }
 
     val database = Database.connect(dataSource)
-    
+
     transaction(database) {
         SchemaUtils.create(Users)
         SchemaUtils.create(Rooms)
@@ -27,7 +27,6 @@ fun Application.configureDatabase() {
         SchemaUtils.create(Devices)
         SchemaUtils.create(Notifications)
         SchemaUtils.create(Statistics)
-        SchemaUtils.create(StateTypes)
         SchemaUtils.create(States)
         SchemaUtils.create(Actions)
         SchemaUtils.create(Conditions)

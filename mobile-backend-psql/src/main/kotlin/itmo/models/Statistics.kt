@@ -3,6 +3,7 @@ package itmo.models
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.timestamp
 
 @Serializable
@@ -15,7 +16,7 @@ data class Statistic(
 )
 
 object Statistics : IntIdTable("statistic") {
-    val deviceId = reference("device_id", Devices).uniqueIndex()
+    val deviceId = reference("device_id", Devices, onDelete = ReferenceOption.CASCADE).uniqueIndex()
     val time = timestamp("time")
     val waterMeter = double("water_meter").nullable()
     val electricityMeter = double("electricity_meter").nullable()

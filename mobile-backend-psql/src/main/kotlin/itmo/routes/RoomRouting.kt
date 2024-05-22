@@ -62,5 +62,17 @@ fun Route.roomRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Необходимо заполнить все поля")
             }
         }
+        delete {
+            val id = call.request.queryParameters["roomId"]?.toIntOrNull()
+
+            if (id == null || id <= 0) {
+                log("room delete", "-1", "Не указан id", "fail")
+                call.respond(HttpStatusCode.BadRequest, "Нет указан id")
+            } else {
+                dao.deleteById(id)
+                log("room delete", "-1", "Комната $id удалена", "success")
+                call.respond(HttpStatusCode.OK, "Комната $id удалена")
+            }
+        }
     }
 }

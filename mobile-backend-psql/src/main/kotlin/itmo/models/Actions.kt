@@ -8,13 +8,13 @@ data class Action(
     val id: Int?,
     val name: String,
     val deviceTypeId: Int,
-    val stateTypeId: Int,
+    val stateName: String,
     val parameterMode: Boolean,
 )
 
 object Actions : IntIdTable("action") {
     val name = varchar("name", 128)
     val deviceTypeId = reference("device_type_id", DeviceTypes)
-    val stateTypeId = reference("state_type_id", StateTypes)
+    val stateName = varchar("state_name", 128)
     val parameterMode = bool("parameter_mode")
 }
