@@ -8,11 +8,9 @@ import redis.clients.jedis.JedisPool
 import java.text.SimpleDateFormat
 import java.util.*
 
-val jedis : Jedis = JedisPool().resource
-
 suspend fun log(event : String, userId: String, description: String, status: String) {
     val message = MessageLogDao("localhost", "psql", userId, event, SimpleDateFormat("dd/M/yyyy hh:mm:ss").format(
         Date()
     ), description, status)
-    jedis.publish("LoggerQueue", Json.encodeToString(message))
+    JedisPool().resource.publish("LoggerQueue", Json.encodeToString(message))
 }
