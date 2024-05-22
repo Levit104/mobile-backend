@@ -22,7 +22,7 @@ class DeviceTypeRedisRepository : RedisRepository<String, String> {
         return jedis.exists("device_type#$typeId")
     }
 
-    suspend fun getItems() : Map<String, String> {
+    fun getItems() : Map<String, String> {
         val set = jedis.smembers("device_types")
         return set.associateWith { s -> jedis.get("device_type#$s") }
     }

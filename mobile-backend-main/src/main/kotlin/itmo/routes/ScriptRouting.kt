@@ -5,25 +5,23 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import itmo.cache.model.DeviceDAO
 import itmo.cache.model.ScriptDao
 import itmo.plugins.client
+import itmo.util.parseClaim
 
 // TODO: 10.04.2024
 fun Route.scriptRouting() {
     route("scripts") {
         get {
-            val principal = call.principal<JWTPrincipal>()
-            val userId = principal!!.payload.getClaim("userId").asInt()
+            
+            val userId = parseClaim<String>("userId", call)
 
             val response: HttpResponse = client.get("http://localhost:8080/scripts") {
                 url {
-                    parameters.append("userId", userId.toString())
+                    parameters.append("userId", userId)
                 }
             }
             if (response.status == HttpStatusCode.OK) {

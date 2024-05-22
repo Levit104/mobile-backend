@@ -48,7 +48,6 @@ fun Application.configureRouting() {
             deviceTypeRouting()
             stateTypeRouting()
             stateRouting()
-            actionTypeRouting()
             conditionRouting()
             scriptRouting()
             actionRouting()

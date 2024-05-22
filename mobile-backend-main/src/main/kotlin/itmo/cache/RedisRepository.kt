@@ -1,8 +1,6 @@
 package itmo.cache
 
 import redis.clients.jedis.Jedis
-import redis.clients.jedis.JedisPool
-import redis.clients.jedis.JedisPooled
 
 interface RedisRepository<T, V> {
     val jedis : Jedis

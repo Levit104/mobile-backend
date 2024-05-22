@@ -8,7 +8,7 @@ suspend fun startTest() {
     coroutineScope {
         val startTime = System.currentTimeMillis()
         val job = launch {
-            repeat(1000) { index ->
+            repeat(10000) { index ->
                 launch {
                     ClientImitator(index + 1).init()
                 }

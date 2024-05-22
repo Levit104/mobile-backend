@@ -25,7 +25,7 @@ class RoomRedisRepository : RedisRepository<String, String> {
         return jedis.exists("room#$roomId")
     }
 
-    suspend fun getItems() : Map<String, String> {
+    fun getItems() : Map<String, String> {
         val set = jedis.smembers("room")
         return set.associateWith { s -> jedis.get("room#$s") }
     }

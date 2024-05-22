@@ -5,8 +5,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -14,6 +12,7 @@ import itmo.cache.model.DeviceDAO
 import itmo.cache.model.DeviceRedisRepository
 import itmo.plugins.client
 import itmo.util.log
+import itmo.util.parseClaim
 
 
 val deviceRedisRepository = DeviceRedisRepository()
@@ -22,9 +21,9 @@ val deviceRedisRepository = DeviceRedisRepository()
 fun Route.deviceRouting() {
     route("devices") {
         get {
-            val principal = call.principal<JWTPrincipal>()
-            val username = principal!!.payload.getClaim("username").asString()
-            val userId = principal!!.payload.getClaim("userId").asString()
+            
+            val username = parseClaim<String>("username", call)
+            val userId = parseClaim<String>("userId", call)
 
             if (userRedisRepository.isItemExists(username)) {
                 if (deviceRedisRepository.isItemsExistsByUser(userId)) {
@@ -35,7 +34,7 @@ fun Route.deviceRouting() {
 
             val response: HttpResponse = client.get("http://localhost:8080/devices") {
                 url {
-                    parameters.append("userId", userId.toString())
+                    parameters.append("userId", userId)
                 }
             }
             if (response.status == HttpStatusCode.OK) {
@@ -48,9 +47,9 @@ fun Route.deviceRouting() {
         }
 
         get("{id}") {
-            val principal = call.principal<JWTPrincipal>()
-            val username = principal!!.payload.getClaim("username").asString()
-            val userId = principal!!.payload.getClaim("userId").asString()
+            
+            val username = parseClaim<String>("username", call)
+            val userId = parseClaim<String>("userId", call)
             val id = call.parameters["id"]?.toIntOrNull()
 
             if (id != null && deviceRedisRepository.isItemExistsByUser(id.toString(), username)) {
@@ -61,7 +60,7 @@ fun Route.deviceRouting() {
             if (id != null) {
                 val response: HttpResponse = client.get("http://localhost:8080/devices/$id") {
                     url {
-                        parameters.append("userId", userId.toString())
+                        parameters.append("userId", userId)
                     }
                 }
 
@@ -77,8 +76,8 @@ fun Route.deviceRouting() {
 
         post {
             val device = call.receive<DeviceDAO>()
-            val principal = call.principal<JWTPrincipal>()
-            val userId = principal!!.payload.getClaim("userId").asString()
+            
+            val userId = parseClaim<String>("userId", call)
 
             val response: HttpResponse = client.post("http://localhost:8080/devices") {
                 setBody(device)
