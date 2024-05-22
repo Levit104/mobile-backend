@@ -3,11 +3,8 @@ package itmo.dao
 import itmo.models.Device
 import itmo.models.Devices
 import itmo.util.dbQuery
-import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 
 class DeviceDAO : BasicDAO<Device> {
     private fun resultRowToDevice(row: ResultRow): Device = Device(
@@ -37,5 +34,9 @@ class DeviceDAO : BasicDAO<Device> {
 
     suspend fun findAllByUser(userId: Int): List<Device> = dbQuery {
         Devices.select(Devices.userId eq userId).map(::resultRowToDevice)
+    }
+
+    suspend fun deleteById(id: Int) = dbQuery {
+        Devices.deleteWhere { Devices.id eq id }
     }
 }

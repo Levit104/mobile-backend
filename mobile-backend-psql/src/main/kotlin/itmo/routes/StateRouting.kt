@@ -48,7 +48,7 @@ fun Route.stateRouting() {
         post {
             try {
                 val entity = call.receive<State>()
-                val notValid = entity.deviceId <= 0 || entity.stateTypeId <= 0 || entity.value.isBlank()
+                val notValid = entity.deviceId <= 0 || entity.actionId <= 0 || entity.value.isBlank()
                 if (notValid) {
                     log("states post", "-1", "Необходимо заполнить все поля", "fail")
                     call.respond(HttpStatusCode.BadRequest, "Необходимо заполнить все поля")

@@ -3,11 +3,8 @@ package itmo.dao
 import itmo.models.Room
 import itmo.models.Rooms
 import itmo.util.dbQuery
-import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 
 class RoomDAO : BasicDAO<Room> {
     private fun resultRowToRoom(row: ResultRow): Room = Room(
@@ -33,5 +30,9 @@ class RoomDAO : BasicDAO<Room> {
 
     suspend fun findAllByUser(userId: Int): List<Room> = dbQuery {
         Rooms.select(Rooms.userId eq userId).map(::resultRowToRoom)
+    }
+
+    suspend fun deleteById(id: Int) = dbQuery {
+        Rooms.deleteWhere { Rooms.id eq id }
     }
 }

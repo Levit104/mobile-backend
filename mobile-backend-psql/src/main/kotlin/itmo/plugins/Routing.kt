@@ -12,7 +12,6 @@ fun Application.configureRouting() {
         deviceRouting()
         notificationRouting()
         statisticRouting()
-        stateTypeRouting()
         stateRouting()
         actionRouting()
         conditionRouting()

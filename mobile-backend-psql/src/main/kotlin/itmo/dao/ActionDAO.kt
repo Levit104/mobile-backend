@@ -14,7 +14,7 @@ class ActionDAO : BasicDAO<Action> {
         id = row[Actions.id].value,
         name = row[Actions.name],
         deviceTypeId = row[Actions.deviceTypeId].value,
-        stateTypeId = row[Actions.stateTypeId].value,
+        stateName = row[Actions.stateName],
         parameterMode = row[Actions.parameterMode]
     )
 
@@ -30,7 +30,7 @@ class ActionDAO : BasicDAO<Action> {
         Actions.insert {
             it[name] = entity.name
             it[deviceTypeId] = entity.deviceTypeId
-            it[stateTypeId] = entity.stateTypeId
+            it[stateName] = entity.stateName
             it[parameterMode] = entity.parameterMode
         }[Actions.id].value
     }

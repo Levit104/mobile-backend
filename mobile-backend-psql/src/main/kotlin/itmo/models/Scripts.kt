@@ -2,6 +2,7 @@ package itmo.models
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 
 @Serializable
 data class Script(
@@ -17,7 +18,7 @@ data class Script(
 
 object Scripts : IntIdTable("script") {
     val userId = reference("user_id", Users)
-    val deviceId = reference("device_id", Devices)
+    val deviceId = reference("device_id", Devices, onDelete = ReferenceOption.CASCADE)
     val conditionId = reference("condition_id", Conditions)
     val actionId = reference("action_id", Actions)
     val conditionValue = varchar("condition_value", 128)
