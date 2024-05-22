@@ -18,16 +18,16 @@ fun Route.roomRouting() {
             if (call.request.queryParameters.isEmpty()) {
                 log("rooms get", "-1", "find all", "success")
                 call.respond(dao.findAll())
-            }
-
-            val userId = call.request.queryParameters["userId"]?.toIntOrNull()
-
-            if (userId == null || userId <= 0) {
-                log("rooms get", "-1", "Не указан пользователь", "fail")
-                call.respond(HttpStatusCode.BadRequest, "Не указан пользователь")
             } else {
-                log("rooms get", "$userId", "find by userId $userId", "success")
-                call.respond(dao.findAllByUser(userId))
+                val userId = call.request.queryParameters["userId"]?.toIntOrNull()
+
+                if (userId == null || userId <= 0) {
+                    log("rooms get", "-1", "Не указан пользователь", "fail")
+                    call.respond(HttpStatusCode.BadRequest, "Не указан пользователь")
+                } else {
+                    log("rooms get", "$userId", "find by userId $userId", "success")
+                    call.respond(dao.findAllByUser(userId))
+                }
             }
         }
         get("{id}") {

@@ -32,16 +32,16 @@ fun Route.deviceRouting() {
             if (call.request.queryParameters.isEmpty()) {
                 log("devices get", "-1", "find all", "success")
                 call.respond(deviceDAO.findAll())
-            }
-
-            val userId = call.request.queryParameters["userId"]?.toIntOrNull()
-
-            if (userId == null || userId <= 0) {
-                log("devices get", "-1", "Не указан пользователь", "fail")
-                call.respond(HttpStatusCode.BadRequest, "Не указан пользователь")
             } else {
-                log("devices get", "$userId", "devices by userId $userId", "success")
-                call.respond(deviceDAO.findAllByUser(userId))
+                val userId = call.request.queryParameters["userId"]?.toIntOrNull()
+
+                if (userId == null || userId <= 0) {
+                    log("devices get", "-1", "Не указан пользователь", "fail")
+                    call.respond(HttpStatusCode.BadRequest, "Не указан пользователь")
+                } else {
+                    log("devices get", "$userId", "devices by userId $userId", "success")
+                    call.respond(deviceDAO.findAllByUser(userId))
+                }
             }
         }
         get("{id}") {

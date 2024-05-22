@@ -18,16 +18,16 @@ fun Route.stateRouting() {
             if (call.request.queryParameters.isEmpty()) {
                 log("states get", "-1", "find all", "success")
                 call.respond(dao.findAll())
-            }
-
-            val deviceId = call.request.queryParameters["deviceId"]?.toIntOrNull()
-
-            if (deviceId == null || deviceId <= 0) {
-                log("states get", "-1", "Не указано устройство", "fail")
-                call.respond(HttpStatusCode.BadRequest, "Не указано устройство")
             } else {
-                log("states get", "-1", "get by deviceId $deviceId", "success")
-                call.respond(dao.findAllByDevice(deviceId))
+                val deviceId = call.request.queryParameters["deviceId"]?.toIntOrNull()
+
+                if (deviceId == null || deviceId <= 0) {
+                    log("states get", "-1", "Не указано устройство", "fail")
+                    call.respond(HttpStatusCode.BadRequest, "Не указано устройство")
+                } else {
+                    log("states get", "-1", "get by deviceId $deviceId", "success")
+                    call.respond(dao.findAllByDevice(deviceId))
+                }
             }
         }
         get("{id}") {
@@ -42,7 +42,6 @@ fun Route.stateRouting() {
                     call.respond(entity)
                 }
             }
-
             log("states get id", "-1", "no id", "fail")
         }
         post {

@@ -28,16 +28,16 @@ fun Route.actionRouting() {
             if (call.request.queryParameters.isEmpty()) {
                 log("actions get", "-1", "get all", "success")
                 call.respond(actionDAO.findAll())
-            }
-
-            val deviceTypeId = call.request.queryParameters["deviceTypeId"]?.toIntOrNull()
-
-            if (deviceTypeId == null || deviceTypeId <= 0) {
-                log("actions get", "-1", "Не указан тип устройства", "fail")
-                call.respond(HttpStatusCode.BadRequest, "Не указан тип устройства")
             } else {
-                log("actions get", "-1", "DeviceTypeId: $deviceTypeId", "success")
-                call.respond(actionDAO.findAllByDeviceType(deviceTypeId))
+                val deviceTypeId = call.request.queryParameters["deviceTypeId"]?.toIntOrNull()
+                println(deviceTypeId)
+                if (deviceTypeId == null || deviceTypeId <= 0) {
+                    log("actions get", "-1", "Не указан тип устройства", "fail")
+                    call.respond(HttpStatusCode.BadRequest, "Не указан тип устройства")
+                } else {
+                    log("actions get", "-1", "DeviceTypeId: $deviceTypeId", "success")
+                    call.respond(actionDAO.findAllByDeviceType(deviceTypeId))
+                }
             }
         }
         get("{id}") {
