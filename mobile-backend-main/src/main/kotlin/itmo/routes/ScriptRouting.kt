@@ -55,7 +55,7 @@ fun Route.scriptRouting() {
             }
 
             if (response.status == HttpStatusCode.OK) {
-                call.respond(HttpStatusCode.OK, "Сценарий успешно добавлен!")
+                call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 call.respond(response.status, response.bodyAsText())
             }

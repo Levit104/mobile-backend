@@ -39,7 +39,7 @@ fun Route.stateTypeRouting() {
             }
 
             if (response.status == HttpStatusCode.OK) {
-                call.respond(HttpStatusCode.OK, "Тип состояния успешно добавлен!")
+                call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 call.respond(response.status, response.bodyAsText())
             }

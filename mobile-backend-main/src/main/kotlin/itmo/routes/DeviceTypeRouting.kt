@@ -39,7 +39,7 @@ fun Route.deviceTypeRouting() {
             }
 
             if (response.status == HttpStatusCode.OK) {
-                call.respond(HttpStatusCode.OK, "Тип устройства успешно добавлен!")
+                call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 call.respond(response.status, response.bodyAsText())
             }

@@ -85,7 +85,7 @@ fun Route.deviceRouting() {
 
             if (response.status == HttpStatusCode.OK) {
                 log("devices post", userId, "Устройство успешно добавлено! ${device.name}", "success")
-                call.respond(HttpStatusCode.OK, "Устройство успешно добавлено!")
+                call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 log("devices post", userId, "Произошла ошибка при добавлении устройства ${device.name}", "fail")
                 call.respond(HttpStatusCode.BadRequest, "Произошла ошибка при добавлении устройства")

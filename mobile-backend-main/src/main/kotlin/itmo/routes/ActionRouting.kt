@@ -74,7 +74,7 @@ fun Route.actionRouting() {
 
             if (response.status == HttpStatusCode.OK) {
                 log("actions post", userId, "Действие успешно добавлено!", "success")
-                call.respond(HttpStatusCode.OK, "Действие успешно добавлено!")
+                call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 log("actions post", userId, response.bodyAsText(), "fail")
                 call.respond(response.status, response.bodyAsText())

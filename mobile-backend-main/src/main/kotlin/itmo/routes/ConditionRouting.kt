@@ -39,7 +39,7 @@ fun Route.conditionRouting() {
             }
 
             if (response.status == HttpStatusCode.OK) {
-                call.respond(HttpStatusCode.OK, "Условие успешно добавлен!")
+                call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 call.respond(response.status, response.bodyAsText())
             }

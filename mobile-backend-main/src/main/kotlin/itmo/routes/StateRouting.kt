@@ -39,7 +39,7 @@ fun Route.stateRouting() {
             }
 
             if (response.status == HttpStatusCode.OK) {
-                call.respond(HttpStatusCode.OK, "Состояние успешно добавлено!")
+                call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 call.respond(response.status, response.bodyAsText())
             }
@@ -54,7 +54,7 @@ fun Route.stateRouting() {
             }
 
             if (response.status == HttpStatusCode.OK) {
-                call.respond(HttpStatusCode.OK, "Состояние успешно обновлено!")
+                call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
                 call.respond(response.status, response.bodyAsText())
             }
