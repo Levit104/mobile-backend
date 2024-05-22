@@ -20,7 +20,12 @@ val stateRedisRepository = StateRedisRepository()
 
 suspend fun addDeviceToRedis(deviceInfo: DeviceInfo) {
     deviceRedisRepository.addItem(deviceInfo.device.id.toString(), deviceInfo.device)
-    deviceInfo.actions.forEach { action -> actionRedisRepository.addRelation(deviceInfo.device.id.toString(), action.id.toString()) }
+    deviceInfo.actions.forEach { action ->
+        actionRedisRepository.addRelation(
+            deviceInfo.device.id.toString(),
+            action.id.toString()
+        )
+    }
     deviceInfo.states.forEach { state -> stateRedisRepository.addItem(state.id.toString(), state) }
 }
 
@@ -28,7 +33,7 @@ suspend fun addDeviceToRedis(deviceInfo: DeviceInfo) {
 fun Route.deviceRouting() {
     route("devices") {
         get {
-            
+
             val username = parseClaim<String>("username", call)
             val userId = parseClaim<String>("userId", call)
 
@@ -54,7 +59,7 @@ fun Route.deviceRouting() {
         }
 
         get("{id}") {
-            
+
             val username = parseClaim<String>("username", call)
             val userId = parseClaim<String>("userId", call)
             val id = call.parameters["id"]?.toIntOrNull()
@@ -94,10 +99,11 @@ fun Route.deviceRouting() {
 
         post {
             val device = call.receive<DeviceDAO>()
-            
+
             val userId = parseClaim<String>("userId", call)
 
             val response: HttpResponse = client.post("http://localhost:8080/devices") {
+                contentType(ContentType.Application.Json)
                 setBody(device)
             }
 

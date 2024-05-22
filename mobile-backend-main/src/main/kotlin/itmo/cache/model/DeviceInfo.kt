@@ -1,7 +1,10 @@
 package itmo.cache.model
 
-data class DeviceInfo (
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class DeviceInfo(
     val device: DeviceDAO,
     val actions: List<ActionDTO>,
     val states: List<StateDAO>
-        )
+)

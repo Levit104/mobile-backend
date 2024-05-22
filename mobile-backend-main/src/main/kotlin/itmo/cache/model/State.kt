@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class StateDAO(
     val id: Int,
     val deviceId: Int,
-    val stateTypeId: Int,
+    val actionId: Int,
     val value: String
 )
 
@@ -17,7 +17,7 @@ class StateRedisRepository : RedisRepository<StateDAO, StateDAO> {
         return StateDAO(
             map["id"]!!.toInt(),
             map["deviceId"]!!.toInt(),
-            map["stateTypeId"]!!.toInt(),
+            map["actionId"]!!.toInt(),
             map["value"]!!
         )
     }
@@ -43,7 +43,7 @@ class StateRedisRepository : RedisRepository<StateDAO, StateDAO> {
     override suspend fun addItem(name: String, item: StateDAO, time: Long) {
         jedis.hset("state#$name", "id", item.id.toString())
         jedis.hset("state#$name", "deviceId", item.deviceId.toString())
-        jedis.hset("state#$name", "stateTypeId", item.stateTypeId.toString())
+        jedis.hset("state#$name", "actionId", item.actionId.toString())
         jedis.hset("state#$name", "value", item.value)
         jedis.pexpire("state#$name", time)
         addRelation(item.deviceId.toString(), item.id.toString())

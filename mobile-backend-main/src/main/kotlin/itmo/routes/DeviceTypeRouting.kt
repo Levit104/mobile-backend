@@ -52,6 +52,7 @@ fun Route.deviceTypeRouting() {
 
             val response: HttpResponse = client.post("http://localhost:8080/device-types") {
                 setBody(deviceType)
+                contentType(ContentType.Application.Json)
             }
 
             if (response.status == HttpStatusCode.OK) {
