@@ -10,10 +10,26 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.cache.model.DeviceTypeDAO
 import itmo.plugins.client
+import itmo.util.log
+import itmo.util.parseClaim
 
 // TODO: 10.04.2024
 fun Route.deviceTypeRouting() {
     route("device-types") {
+
+        get {
+            val userId = parseClaim<String>("userId", call)
+
+            val response: HttpResponse = client.get("http://localhost:8080/device-types")
+
+            if (response.status == HttpStatusCode.OK) {
+                log("device-types get", userId, "Получены все типы устройств", "success")
+                call.respond(HttpStatusCode.OK, response.body<List<DeviceTypeDAO>>())
+            } else {
+                log("device-types get", userId, response.bodyAsText(), "fail")
+                call.respond(response.status, response.bodyAsText())
+            }
+        }
 
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
