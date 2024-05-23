@@ -1,0 +1,370 @@
+{
+	"info": {
+		"_postman_id": "9047d348-3862-4dd6-9241-2c9e0a6917b5",
+		"name": "mobile",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25614678"
+	},
+	"item": [
+		{
+			"name": "Авторизация",
+			"item": [
+				{
+					"name": "Регистрация",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQzOTU3M30.NJGXpirXnWRRkCxXFqAjXNeBCEfS_DYawA0BPCibnZU"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"login\": \"abobus\",\r\n    \"password\": \"abobus\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/signUp",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"signUp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Логин",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQzOTU3M30.NJGXpirXnWRRkCxXFqAjXNeBCEfS_DYawA0BPCibnZU"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"login\": \"abobus\",\r\n    \"password\": \"abobus\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/signIn",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Девайсы",
+			"item": [
+				{
+					"name": "Все девайсы",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"url": {
+							"raw": "localhost:8082/devices",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"devices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Один девайс",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"url": {
+							"raw": "localhost:8082/devices/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"devices",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавить девайс",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"abobus_device\",\r\n    \"typeId\": 1,\r\n    \"roomId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/devices",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"devices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить девайс",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"url": {
+							"raw": "localhost:8082/devices?deviceId=1",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"devices"
+							],
+							"query": [
+								{
+									"key": "deviceId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Все типы девайсов",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"url": {
+							"raw": "localhost:8082/device-types",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"device-types"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Комнаты",
+			"item": [
+				{
+					"name": "Все комнаты",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"url": {
+							"raw": "localhost:8082/rooms",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавить комнату",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"abobus_room\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/rooms",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить комнату",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"url": {
+							"raw": "localhost:8082/rooms?roomId=1",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"rooms"
+							],
+							"query": [
+								{
+									"key": "roomId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Действия",
+			"item": [
+				{
+					"name": "Все действия",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"url": {
+							"raw": "localhost:8082/actions?deviceTypeId=1",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"actions"
+							],
+							"query": [
+								{
+									"key": "deviceTypeId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Выполнить действие",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBVURJRU5DRSIsImlzcyI6IklTU1VFUiIsInVzZXJuYW1lIjoiYWJvYnVzIiwidXNlcklkIjoiMSIsImV4cCI6MTcxNjQ0MzUxMH0.w2VohhhmQqU1Zh4MdXqltJBOD7Ps0h3_4kHHCbvgeDI"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"deviceId\": 1,\r\n    \"parameter\": \"aboba_param\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/actions",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"actions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
