@@ -36,12 +36,9 @@ fun Route.deviceRouting() {
         get {
             val username = parseClaim<String>("username", call)
             val userId = parseClaim<String>("userId", call)
-
-            if (userRedisRepository.isItemExists(username)) {
-                if (deviceRedisRepository.isItemsExistsByUser(userId)) {
-                    log("devices get cash", userId, "Устройства получены из кэша", "success")
-                    call.respond(deviceRedisRepository.getItemsByUser(userId))
-                }
+            if (userRedisRepository.isItemExists(username) && deviceRedisRepository.isItemsExistsByUser(userId)) {
+                log("devices get cash", userId, "Устройства получены из кэша", "success")
+                call.respond(deviceRedisRepository.getItemsByUser(userId))
             } else {
                 val response: HttpResponse = client.get("http://localhost:8080/devices") {
                     url {
