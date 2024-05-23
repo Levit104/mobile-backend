@@ -13,7 +13,7 @@ fun Route.userRouting() {
             val username = parseClaim<String>("username", call)
             val userId = parseClaim<String>("userId", call)
 
-            log("user get cash", userId, "Пользователь получен из кэша", "success")
+            log("user get", userId, "Пользователь получен", "success")
             call.respond(username)
         }
     }

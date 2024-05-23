@@ -124,7 +124,7 @@ fun Route.deviceRouting() {
                 }
 
                 if (response.status == HttpStatusCode.OK) {
-                    log("devices delete", userId, "Успешно удалилось", "success")
+                    log("devices delete", userId, "Успешно удалилось действие", "success")
                     call.respond(HttpStatusCode.OK, "Успешно удалилось")
                 } else {
                     log("devices delete", userId, "Не удалось удалить $deviceId", "fail")

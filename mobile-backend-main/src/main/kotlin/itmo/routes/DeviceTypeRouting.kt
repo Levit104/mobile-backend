@@ -41,19 +41,25 @@ fun Route.deviceTypeRouting() {
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
+            val userId = parseClaim<String>("userId", call)
+
             if (id != null) {
                 if (deviceTypeRedisRepository.isItemExists(id.toString())) {
+                    log("device-types get id cash", userId, "Получен тип устройства $id из кэша", "success")
                     call.respond(HttpStatusCode.OK, deviceTypeRedisRepository.getItem(id.toString()))
                 } else {
                     val response: HttpResponse = client.get("http://localhost:8080/device-types/$id")
 
                     if (response.status == HttpStatusCode.OK) {
+                        log("device-types get id", userId, "Получен тип устройства $id", "success")
                         call.respond(HttpStatusCode.OK, response.body<DeviceTypeDAO>())
                     } else {
+                        log("device-types get id", userId, "Не удалось получить тип устройства $id", "fail")
                         call.respond(response.status, response.bodyAsText())
                     }
                 }
             } else {
+                log("device-types get id", userId, "Нет id", "fail")
                 call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
         }
@@ -61,12 +67,16 @@ fun Route.deviceTypeRouting() {
         post {
             val deviceType = call.receive<DeviceTypeDAO>()
 
+            val userId = parseClaim<String>("userId", call)
+
             val response: HttpResponse = sendPost("http://localhost:8080/device-types", deviceType)
 
             if (response.status == HttpStatusCode.OK) {
                 deviceTypeRedisRepository.addItem(response.bodyAsText(), deviceType.name)
+                log("device-types post", userId, "Удалось добавить тип устройства ${response.bodyAsText()}", "success")
                 call.respond(HttpStatusCode.OK, response.bodyAsText())
             } else {
+                log("device-types post", userId, "Не удалось добавить тип устройства ${deviceType.name}", "fail")
                 call.respond(response.status, response.bodyAsText())
             }
         }
