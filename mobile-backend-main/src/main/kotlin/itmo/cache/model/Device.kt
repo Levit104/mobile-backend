@@ -8,7 +8,7 @@ data class DeviceDAO(
     val id: Long?,
     val name: String,
     val typeId: Long,
-    val roomId: Long,
+    val roomId: Long?,
     val userId: Long?
 )
 
@@ -30,7 +30,7 @@ class DeviceRedisRepository : RedisRepository<DeviceDAO, DeviceDAO> {
             map["id"]!!.toLong(),
             map["name"]!!,
             map["typeId"]!!.toLong(),
-            map["roomId"]!!.toLong(),
+            map["roomId"]?.toLong(),
             map["userId"]!!.toLong(),
         )
     }

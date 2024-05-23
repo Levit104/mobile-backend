@@ -21,12 +21,14 @@ import itmo.routes.*
 import itmo.util.log
 import itmo.util.sendPost
 import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import redis.clients.jedis.Jedis
 import java.util.*
 
 
 val userRedisRepository = UserRedisRepository()
+@OptIn(ExperimentalSerializationApi::class)
 val client = HttpClient(CIO) {
     engine {
         endpoint.maxConnectionsPerRoute = 100
@@ -37,6 +39,7 @@ val client = HttpClient(CIO) {
     }
     install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
         json(Json {
+            explicitNulls = false
             prettyPrint = true
             isLenient = true
         })
