@@ -12,7 +12,7 @@ fun Application.configureDatabase() {
         jdbcUrl = "jdbc:postgresql://localhost:5432/mobile"
         driverClassName = "org.postgresql.Driver"
         username = "postgres"
-        password = "1112"
+        password = "qwerty123"
         maximumPoolSize = 50
         isAllowPoolSuspension = true
         isAutoCommit = false
@@ -25,8 +25,6 @@ fun Application.configureDatabase() {
         SchemaUtils.create(Rooms)
         SchemaUtils.create(DeviceTypes)
         SchemaUtils.create(Devices)
-        SchemaUtils.create(Notifications)
-        SchemaUtils.create(Statistics)
         SchemaUtils.create(States)
         SchemaUtils.create(Actions)
         SchemaUtils.create(Conditions)

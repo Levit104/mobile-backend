@@ -14,6 +14,7 @@ fun Route.stateRouting() {
     val dao = StateDAO()
 
     route("states") {
+        // FIXME не используется
         get {
             if (call.request.queryParameters.isEmpty()) {
                 log("states get", "-1", "find all", "success")
@@ -30,6 +31,7 @@ fun Route.stateRouting() {
                 }
             }
         }
+        // FIXME не используется
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
@@ -44,6 +46,7 @@ fun Route.stateRouting() {
             }
             log("states get id", "-1", "no id", "fail")
         }
+        // FIXME не используется
         post {
             try {
                 val entity = call.receive<State>()

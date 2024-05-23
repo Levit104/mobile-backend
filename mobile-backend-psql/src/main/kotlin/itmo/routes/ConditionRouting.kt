@@ -14,10 +14,12 @@ fun Route.conditionRouting() {
     val dao = ConditionDAO()
 
     route("conditions") {
+        // FIXME не используется
         get {
             log("conditions get", "-1", "get all", "success")
             call.respond(dao.findAll())
         }
+        // FIXME не используется
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
@@ -32,6 +34,7 @@ fun Route.conditionRouting() {
             }
             log("conditions get id", "-1", "no id", "fail")
         }
+        // FIXME не используется
         post {
             try {
                 val entity = call.receive<Condition>()

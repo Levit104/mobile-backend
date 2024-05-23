@@ -16,20 +16,38 @@ fun Route.roomRouting() {
     route("rooms") {
         get {
             if (call.request.queryParameters.isEmpty()) {
-                log("rooms get", "-1", "find all", "success")
+                log("GET /rooms", "-1", "Получение всех комнат", "success")
                 call.respond(dao.findAll())
             } else {
                 val userId = call.request.queryParameters["userId"]?.toIntOrNull()
 
-                if (userId == null || userId <= 0) {
-                    log("rooms get", "-1", "Не указан пользователь", "fail")
-                    call.respond(HttpStatusCode.BadRequest, "Не указан пользователь")
-                } else {
-                    log("rooms get", "$userId", "find by userId $userId", "success")
+                try {
+                    if (userId == null || userId <= 0) {
+                        throw BadRequestException("Указан некорректный userId=$userId")
+                    }
+
+                    log(
+                        "GET /rooms?userId=$userId",
+                        "$userId",
+                        "Получение всех комнат у пользователя #$userId",
+                        "success"
+                    )
+
                     call.respond(dao.findAllByUser(userId))
+
+                } catch (e: BadRequestException) {
+                    log(
+                        "GET /rooms?userId=$userId",
+                        "-1",
+                        "Ошибка при получении комнат: ${e.message}",
+                        "fail"
+                    )
+
+                    call.respond(HttpStatusCode.BadRequest, "Ошибка при получении комнат: ${e.message}")
                 }
             }
         }
+        // FIXME не используется
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
@@ -48,31 +66,58 @@ fun Route.roomRouting() {
         post {
             try {
                 val entity = call.receive<Room>()
+
                 val notValid = entity.name.isBlank() || entity.userId <= 0
                 if (notValid) {
-                    log("rooms post", "-1", "Необходимо заполнить все поля", "fail")
-                    call.respond(HttpStatusCode.BadRequest, "Необходимо заполнить все поля")
-                } else {
-                    // TODO проверка UNIQUE у пользователя
-                    log("rooms post", "-1", "insert room name ${entity.name}", "success")
-                    call.respond(dao.insert(entity))
+                    throw BadRequestException("Некорректное значение одного или нескольких полей - name, typeId, userId")
                 }
+
+                // TODO проверка UNIQUE у пользователя
+                log(
+                    "POST /rooms",
+                    "${entity.userId}",
+                    "insert room name ${entity.name}",
+                    "success"
+                )
+
+                call.respond(dao.insert(entity))
+
             } catch (e: BadRequestException) {
-                log("rooms post", "-1", "BadRequestException", "error")
-                call.respond(HttpStatusCode.BadRequest, "Необходимо заполнить все поля")
+                log(
+                    "POST /actions",
+                    "-1",
+                    "Ошибка при выполнении действия: ${e.message}",
+                    "fail"
+                )
+
+                call.respond(HttpStatusCode.BadRequest, "Ошибка при выполнении действия: ${e.message}")
             }
         }
         delete {
             val id = call.request.queryParameters["roomId"]?.toIntOrNull()
 
-            if (id == null || id <= 0) {
-                log("room delete", "-1", "Не указан id", "fail")
-                call.respond(HttpStatusCode.BadRequest, "Нет указан id")
-            } else {
+            try {
+
+                if (id == null || id <= 0) {
+                    throw BadRequestException("Указан некорректный id=$id")
+                }
+
                 dao.deleteById(id)
-                log("room delete", "-1", "Комната $id удалена", "success")
+                log("DELETE /rooms?roomId=$id", "-1", "Комната #$id удалёна", "success")
                 call.respond(HttpStatusCode.OK, "Комната $id удалена")
+
+            } catch (e: BadRequestException) {
+                log(
+                    "DELETE /rooms?roomId=$id",
+                    "-1",
+                    "Ошибка при удалении комнаты: ${e.message}",
+                    "fail"
+                )
+
+                call.respond(HttpStatusCode.BadRequest, "Ошибка при удалении комнаты: ${e.message}")
             }
+
+
         }
     }
 }

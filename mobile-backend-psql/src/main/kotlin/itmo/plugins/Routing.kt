@@ -10,8 +10,6 @@ fun Application.configureRouting() {
         roomRouting()
         deviceTypeRouting()
         deviceRouting()
-        notificationRouting()
-        statisticRouting()
         stateRouting()
         actionRouting()
         conditionRouting()

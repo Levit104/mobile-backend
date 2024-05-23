@@ -15,9 +15,10 @@ fun Route.deviceTypeRouting() {
 
     route("device-types") {
         get {
-            log("device-types get", "-1", "get all", "success")
+            log("GET /device-types", "-1", "Получение всех типов девайсов", "success")
             call.respond(dao.findAll())
         }
+        // FIXME не используется
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
@@ -32,6 +33,7 @@ fun Route.deviceTypeRouting() {
             }
             log("device-types get id", "-1", "no id", "fail")
         }
+        // FIXME не используется
         post {
             try {
                 val entity = call.receive<DeviceType>()
