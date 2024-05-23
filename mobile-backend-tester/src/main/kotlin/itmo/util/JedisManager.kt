@@ -1,10 +1,11 @@
 package itmo.util
 
+import itmo.jedisPool
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import redis.clients.jedis.JedisPool
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 fun log(event: String, userId: String, description: String, status: String) {
     val message = MessageLogDao(
@@ -12,5 +13,5 @@ fun log(event: String, userId: String, description: String, status: String) {
             Date()
         ), description, status
     )
-    JedisPool().resource.publish("LoggerQueue", Json.encodeToString(message))
+    jedisPool.resource.publish("LoggerQueueTester", Json.encodeToString(message))
 }
