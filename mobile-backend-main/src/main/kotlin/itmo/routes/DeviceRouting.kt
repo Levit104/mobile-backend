@@ -104,13 +104,13 @@ fun Route.deviceRouting() {
                 call.respond(response.status, response.bodyAsText())
             }
         }
-        delete {
+        delete("{id}") {
             val userId = parseClaim<String>("userId", call)
-            val deviceId = call.request.queryParameters["deviceId"]?.toIntOrNull()
-            val response = sendDelete("http://localhost:8080/devices", "deviceId", deviceId.toString())
+            val id = call.parameters["id"]?.toIntOrNull()
+            val response = sendDelete("http://localhost:8080/devices/$id")
 
             val logStatus = if (response.status == HttpStatusCode.OK) "success" else "fail"
-            log("DELETE /devices?deviceId=$deviceId", userId, response.bodyAsText(), logStatus)
+            log("DELETE /devices/$id", userId, response.bodyAsText(), logStatus)
             call.respond(response.status, response.bodyAsText())
         }
     }

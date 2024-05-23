@@ -87,7 +87,7 @@ fun Route.deviceRouting() {
                 log(
                     "GET /devices/$id",
                     "-1",
-                    "Ошибка при получении девайса #$id: ${e.message}",
+                    "Ошибка при получении девайса: ${e.message}",
                     "fail"
                 )
 
@@ -142,8 +142,8 @@ fun Route.deviceRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Ошибка при добавлении девайса: ${e.message}")
             }
         }
-        delete {
-            val id = call.request.queryParameters["deviceId"]?.toIntOrNull()
+        delete("{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
 
             try {
                 if (id == null || id <= 0) {
@@ -155,12 +155,12 @@ fun Route.deviceRouting() {
                 }
 
                 deviceDAO.deleteById(id)
-                log("DELETE /devices?deviceId=$id", "-1", "Девайс #$id удалён", "success")
+                log("DELETE /devices/$id", "-1", "Девайс #$id удалён", "success")
                 call.respond("Девайс #$id удалён")
 
             } catch (e: BadRequestException) {
                 log(
-                    "DELETE /devices?deviceId=$id",
+                    "DELETE /devices/$id",
                     "-1",
                     "Ошибка при удалении девайса: ${e.message}",
                     "fail"

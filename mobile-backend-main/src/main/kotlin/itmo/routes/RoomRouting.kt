@@ -69,13 +69,13 @@ fun Route.roomRouting() {
 
             call.respond(response.status, response.bodyAsText())
         }
-        delete {
+        delete("{id}") {
             val userId = parseClaim<String>("userId", call)
-            val roomId = call.request.queryParameters["roomId"]?.toIntOrNull()
-            val response = sendDelete("http://localhost:8080/rooms", "roomId", roomId.toString())
+            val id = call.parameters["id"]?.toIntOrNull()
+            val response = sendDelete("http://localhost:8080/rooms/$id")
 
             val logStatus = if (response.status == HttpStatusCode.OK) "success" else "fail"
-            log("DELETE /rooms?roomId=$roomId", userId, response.bodyAsText(), logStatus)
+            log("DELETE /rooms/$id", userId, response.bodyAsText(), logStatus)
             call.respond(response.status, response.bodyAsText())
         }
     }

@@ -92,8 +92,8 @@ fun Route.roomRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Ошибка при выполнении действия: ${e.message}")
             }
         }
-        delete {
-            val id = call.request.queryParameters["roomId"]?.toIntOrNull()
+        delete("{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
 
             try {
                 if (id == null || id <= 0) {
@@ -105,12 +105,12 @@ fun Route.roomRouting() {
                 }
 
                 dao.deleteById(id)
-                log("DELETE /rooms?roomId=$id", "-1", "Комната #$id удалёна", "success")
+                log("DELETE /rooms/$id", "-1", "Комната #$id удалёна", "success")
                 call.respond(HttpStatusCode.OK, "Комната #$id удалена")
 
             } catch (e: BadRequestException) {
                 log(
-                    "DELETE /rooms?roomId=$id",
+                    "DELETE /rooms/$id",
                     "-1",
                     "Ошибка при удалении комнаты: ${e.message}",
                     "fail"
@@ -118,8 +118,6 @@ fun Route.roomRouting() {
 
                 call.respond(HttpStatusCode.BadRequest, "Ошибка при удалении комнаты: ${e.message}")
             }
-
-
         }
     }
 }
