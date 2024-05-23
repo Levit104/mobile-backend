@@ -13,20 +13,31 @@ data class RoomDAO(
 
 class RoomRedisRepository : RedisRepository<String, String> {
     override suspend fun addItem(roomId: String, roomName: String, time: Long) {
-        jedis.set("room#$roomId", roomName)
-        jedis.sadd("room", roomId)
+        val con = jedis
+        con.set("room#$roomId", roomName)
+        con.sadd("room", roomId)
+        con.close()
     }
 
     override suspend fun getItem(roomId: String): String {
-        return jedis.get("room#$roomId")
+        val con = jedis
+        val isExists = con.get("room#$roomId")
+        con.close()
+        return isExists
     }
 
     override suspend fun isItemExists(roomId: String): Boolean {
-        return jedis.exists("room#$roomId")
+        val con = jedis
+        val isExists = con.exists("room#$roomId")
+        con.close()
+        return isExists
     }
 
     fun getItems(): Map<String, String> {
-        val set = jedis.smembers("room")
-        return set.associateWith { s -> jedis.get("room#$s") }
+        val con = jedis
+        val set = con.smembers("room")
+        val items = set.associateWith { s -> con.get("room#$s") }
+        con.close()
+        return items
     }
 }

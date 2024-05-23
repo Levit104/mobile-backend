@@ -118,17 +118,6 @@
             <version>2.3.9</version>
             <scope>compile</scope>
         </dependency>
-
-        <dependency>
-            <groupId>io.ktor</groupId>
-            <artifactId>ktor-server-test-host-jvm</artifactId>
-            <version>${ktor_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
-            <version>${kotlin_version}</version>
-        </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-mock-jvm</artifactId>
@@ -151,7 +140,6 @@
     </dependencies>
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <resources>
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
@@ -177,13 +165,13 @@
                         <plugin>kotlinx-serialization</plugin>
                     </compilerPlugins>
                 </configuration>
-                <!--                <dependencies>-->
-                <!--                    <dependency>-->
-                <!--                        <groupId>org.jetbrains.kotlin</groupId>-->
-                <!--                        <artifactId>kotlin-maven-serialization</artifactId>-->
-                <!--                        <version>${kotlin_version}</version>-->
-                <!--                    </dependency>-->
-                <!--                </dependencies>-->
+                                <dependencies>
+                                    <dependency>
+                                        <groupId>org.jetbrains.kotlin</groupId>
+                                        <artifactId>kotlin-maven-serialization</artifactId>
+                                        <version>${kotlin_version}</version>
+                                    </dependency>
+                                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

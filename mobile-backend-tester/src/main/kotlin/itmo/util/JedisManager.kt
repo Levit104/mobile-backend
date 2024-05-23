@@ -13,5 +13,7 @@ fun log(event: String, userId: String, description: String, status: String) {
             Date()
         ), description, status
     )
-    jedisPool.resource.publish("LoggerQueueTester", Json.encodeToString(message))
+    val con = jedisPool.resource
+    con.publish("LoggerQueueTester", Json.encodeToString(message))
+    con.close()
 }

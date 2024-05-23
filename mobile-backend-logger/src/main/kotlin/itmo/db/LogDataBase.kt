@@ -7,7 +7,7 @@ import java.sql.PreparedStatement
 
 class LogDataBase {
     private lateinit var connection: Connection
-    private val batchSize = 100
+    private val batchSize = 1000
     private var currentBatchSize = 0
     private lateinit var preparedStatement: PreparedStatement
 

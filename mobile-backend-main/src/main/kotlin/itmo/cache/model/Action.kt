@@ -21,7 +21,9 @@ data class ActionDTO(
 
 class ActionRedisRepository : RedisRepository<ActionDTO, ActionDTO> {
     override suspend fun getItem(name: String): ActionDTO {
-        val map = jedis.hgetAll("action#$name")
+        val con = jedis
+        val map = con.hgetAll("action#$name")
+        con.close()
         return ActionDTO(
             map["id"]!!.toInt(),
             map["name"]!!,
@@ -32,28 +34,40 @@ class ActionRedisRepository : RedisRepository<ActionDTO, ActionDTO> {
     }
 
     override suspend fun isItemExists(name: String): Boolean {
-        return jedis.exists("action#$name")
+        val con = jedis
+        val isExists = con.exists("action#$name")
+        con.close()
+        return isExists
     }
 
     fun addRelation(deviceTypeId: String, actionId: String, time: Long = 600_000) {
-        jedis.sadd("deviceType_action#$deviceTypeId", actionId)
-        jedis.pexpire("deviceType_action#$deviceTypeId", time)
+        val con = jedis
+        con.sadd("deviceType_action#$deviceTypeId", actionId)
+        con.pexpire("deviceType_action#$deviceTypeId", time)
+        con.close()
     }
 
     suspend fun getItemsByDeviceTypeId(deviceTypeId: String): List<ActionDTO> {
-        val set = jedis.smembers("deviceType_action#$deviceTypeId")
+        val con = jedis
+        val set = con.smembers("deviceType_action#$deviceTypeId")
+        con.close()
         return set.map { s -> this.getItem(s) }
     }
 
     fun isItemsExistsByDeviceTypeId(deviceTypeId: String): Boolean {
-        return jedis.exists("deviceType_action#$deviceTypeId")
+        val con = jedis
+        val isExists = con.exists("deviceType_action#$deviceTypeId")
+        con.close()
+        return isExists
     }
 
     override suspend fun addItem(name: String, item: ActionDTO, time: Long) {
-        jedis.hset("action#$name", "id", item.id.toString())
-        jedis.hset("action#$name", "name", item.name)
-        jedis.hset("action#$name", "deviceTypeId", item.deviceTypeId.toString())
-        jedis.hset("action#$name", "stateName", item.stateName)
-        jedis.hset("action#$name", "parameterMode", item.parameterMode.toString())
+        val con = jedis
+        con.hset("action#$name", "id", item.id.toString())
+        con.hset("action#$name", "name", item.name)
+        con.hset("action#$name", "deviceTypeId", item.deviceTypeId.toString())
+        con.hset("action#$name", "stateName", item.stateName)
+        con.hset("action#$name", "parameterMode", item.parameterMode.toString())
+        con.close()
     }
 }

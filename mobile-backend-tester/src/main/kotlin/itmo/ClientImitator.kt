@@ -6,8 +6,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import itmo.models.*
 import itmo.util.log
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ClientImitator(private val id: Int) {
     private val login: String = "user$id"
@@ -26,16 +25,28 @@ class ClientImitator(private val id: Int) {
     )
 
     suspend fun init() {
-        coroutineScope {
-            launch {
-                signUp()
-                signIn()
-            }.join()
-            repeat((5..10).random()) { idx ->
-                println(idx)
-                functionList.random()()
-            }
+        println("Up $id")
+        signUp()
+
+        println("In $id")
+        signIn()
+
+        repeat((5..10).random()) { idx ->
+            println("$id $idx")
+            functionList.random()()
         }
+//        runBlocking {
+//            async {
+//                println("Up $id")
+//                signUp() }.await()
+//            async {
+//                println("In $id")
+//                signIn() }.await()
+//            repeat((5..10).random()) { idx ->
+//                println("$id $idx")
+//                functionList.random()()
+//            }
+//        }
     }
 
     private suspend fun sendPost(url: String, body: Any, auth: Boolean = false) = client.post(url) {
@@ -69,7 +80,9 @@ class ClientImitator(private val id: Int) {
         log("signIn post", "$id", "Отправлен запрос на вход", "success")
         val response: HttpResponse = sendPost("http://localhost:8082/signIn", User(login, password))
         if (response.status == HttpStatusCode.OK) {
-            jwt = response.bodyAsText()
+            runBlocking {
+                jwt = response.bodyAsText()
+            }
         }
     }
 
@@ -154,7 +167,7 @@ class ClientImitator(private val id: Int) {
         val paramValue = if (action.parameterMode) {
             (0..1000).random().toString()
         } else {
-            (deviceInfo.states.first { it.actionId == action.id }.value.toInt() + 1 % 2).toString()
+            ((deviceInfo.states.firstOrNull { it.actionId == action.id }?.value?.toInt() ?: return) + 1 % 2).toString()
         }
 
         log("executeAction", "$id", "Отправлен запрос на выполнение действия ${action.name}", "success")

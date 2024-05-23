@@ -14,18 +14,22 @@ data class DeviceDAO(
 
 class DeviceRedisRepository : RedisRepository<DeviceDAO, DeviceDAO> {
     override suspend fun addItem(deviceId: String, item: DeviceDAO, time: Long) {
-        jedis.hset("device#$deviceId", "id", item.id.toString())
-        jedis.hset("device#$deviceId", "name", item.name)
-        jedis.hset("device#$deviceId", "typeId", item.typeId.toString())
-        jedis.hset("device#$deviceId", "roomId", item.roomId.toString())
-        jedis.hset("device#$deviceId", "userId", item.userId.toString())
-        jedis.pexpire("device#$deviceId", time)
-        jedis.sadd("user_device#${item.userId}", deviceId)
-        jedis.pexpire("user_device#${item.userId}", time)
+        val con = jedis
+        con.hset("device#$deviceId", "id", item.id.toString())
+        con.hset("device#$deviceId", "name", item.name)
+        con.hset("device#$deviceId", "typeId", item.typeId.toString())
+        con.hset("device#$deviceId", "roomId", item.roomId.toString())
+        con.hset("device#$deviceId", "userId", item.userId.toString())
+        con.pexpire("device#$deviceId", time)
+        con.sadd("user_device#${item.userId}", deviceId)
+        con.pexpire("user_device#${item.userId}", time)
+        con.close()
     }
 
     override suspend fun getItem(deviceId: String): DeviceDAO {
-        val map = jedis.hgetAll("device#$deviceId")
+        val con = jedis
+        val map = con.hgetAll("device#$deviceId")
+        con.close()
         return DeviceDAO(
             map["id"]!!.toLong(),
             map["name"]!!,
@@ -36,20 +40,31 @@ class DeviceRedisRepository : RedisRepository<DeviceDAO, DeviceDAO> {
     }
 
     override suspend fun isItemExists(deviceId: String): Boolean {
-        return jedis.exists("device#$deviceId")
+        val con = jedis
+        val isExists = con.exists("device#$deviceId")
+        con.close()
+        return isExists
     }
 
     suspend fun getItemsByUser(userId: String): List<DeviceDAO> {
-        val set = jedis.smembers("user_device#$userId")
+        val con = jedis
+        val set = con.smembers("user_device#$userId")
+        con.close()
         return set.map { s -> this.getItem(s) }
     }
 
     fun isItemsExistsByUser(userId: String): Boolean {
-        return jedis.exists("user_device$userId")
+        val con = jedis
+        val isExists = con.exists("user_device$userId")
+        con.close()
+        return isExists
     }
 
     fun isItemExistsByUser(deviceId: String, username: String): Boolean {
-        val userId = jedis.get("username#$username")
-        return jedis.sismember("user_device#$userId", deviceId)
+        val con = jedis
+        val userId = con.get("username#$username")
+        val isExists = con.sismember("user_device#$userId", deviceId)
+        con.close()
+        return isExists
     }
 }

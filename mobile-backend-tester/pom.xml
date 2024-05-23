@@ -164,13 +164,13 @@
                         <plugin>kotlinx-serialization</plugin>
                     </compilerPlugins>
                 </configuration>
-                <!--                <dependencies>-->
-                <!--                    <dependency>-->
-                <!--                        <groupId>org.jetbrains.kotlin</groupId>-->
-                <!--                        <artifactId>kotlin-maven-serialization</artifactId>-->
-                <!--                        <version>${kotlin_version}</version>-->
-                <!--                    </dependency>-->
-                <!--                </dependencies>-->
+                                <dependencies>
+                                    <dependency>
+                                        <groupId>org.jetbrains.kotlin</groupId>
+                                        <artifactId>kotlin-maven-serialization</artifactId>
+                                        <version>${kotlin_version}</version>
+                                    </dependency>
+                                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

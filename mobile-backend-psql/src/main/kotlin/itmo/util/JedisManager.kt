@@ -10,5 +10,7 @@ fun log(event : String, userId: String, description: String, status: String) {
     val message = MessageLogDao("localhost", "psql", userId, event, SimpleDateFormat("dd/M/yyyy hh:mm:ss").format(
         Date()
     ), description, status)
-    jedisPool.resource.publish("LoggerQueuePsql", Json.encodeToString(message))
+    val con = jedisPool.resource
+    con.publish("LoggerQueuePsql", Json.encodeToString(message))
+    con.close()
 }

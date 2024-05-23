@@ -13,7 +13,9 @@ data class UserDAO(
 class UserRedisRepository : RedisRepository<UserDAO, UserDAO> {
 
     override suspend fun getItem(userId: String): UserDAO {
-        val map = jedis.hgetAll("user#$userId")
+        val con = jedis
+        val map = con.hgetAll("user#$userId")
+        con.close()
         return UserDAO(
             map["id"]!!.toLong(),
             map["login"]!!,
@@ -22,18 +24,26 @@ class UserRedisRepository : RedisRepository<UserDAO, UserDAO> {
     }
 
     override suspend fun isItemExists(username: String): Boolean {
-        return jedis.exists("username#$username")
+        val con = jedis
+        val isExists = con.exists("username#$username")
+        con.close()
+        return isExists
     }
 
     override suspend fun addItem(userId: String, item: UserDAO, time: Long) {
-        jedis.hset("user#$userId", "id", item.id.toString())
-        jedis.hset("user#$userId", "login", item.login)
-        jedis.hset("user#$userId", "password", item.password)
-        jedis.pexpire("user#$userId", time)
-        jedis.setex("username#${item.login}", time, userId)
+        val con = jedis
+        con.hset("user#$userId", "id", item.id.toString())
+        con.hset("user#$userId", "login", item.login)
+        con.hset("user#$userId", "password", item.password)
+        con.pexpire("user#$userId", time)
+        con.setex("username#${item.login}", time, userId)
+        con.close()
     }
 
     suspend fun getUserByLogin(login: String): UserDAO {
-        return getItem(jedis.get("username#$login"))
+        val con = jedis
+        val item = getItem(con.get("username#$login"))
+        con.close()
+        return item
     }
 }

@@ -50,7 +50,9 @@ val actionRedisRepository = ActionRedisRepository()
 val deviceTypeRedisRepository = DeviceTypeRedisRepository()
 
 fun Application.configureRouting() {
-    jedisPool.resource.flushAll()
+    val con = jedisPool.resource
+    con.flushAll()
+    con.close()
     launch {
         val response: HttpResponse = client.get("http://localhost:8080/device-types")
 
