@@ -6,31 +6,35 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import itmo.models.*
 import itmo.util.log
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 class ClientImitator(private val id: Int) {
     private val login: String = "user$id"
     private val password: String = "password$id"
     private lateinit var jwt: String
+    private val functionList = listOf(
+        ::getRooms,
+        ::getDevices,
+        ::getDeviceTypes,
+        ::getDeviceInfo,
+        ::executeAction,
+        ::addRoom,
+        ::addDevice,
+        ::deleteRoom,
+        ::deleteDevice
+    )
 
     suspend fun init() {
-        signUp()
-        signIn()
-
-        val functionList = listOf(
-            ::getRooms,
-            ::getDevices,
-            ::getDeviceTypes,
-            ::getDeviceInfo,
-            ::executeAction,
-            ::addRoom,
-            ::addDevice,
-            ::deleteRoom,
-            ::deleteDevice
-        )
-
-        repeat((5..10).random()) { idx ->
-            println(idx)
-            functionList.random()()
+        coroutineScope {
+            launch {
+                signUp()
+                signIn()
+            }.join()
+            repeat((5..10).random()) { idx ->
+                println(idx)
+                functionList.random()()
+            }
         }
     }
 

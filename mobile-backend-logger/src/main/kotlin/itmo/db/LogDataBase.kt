@@ -34,7 +34,7 @@ class LogDataBase {
                 project String,
                 userId String,
                 eventName String,
-                date DateTime,
+                dateNotify String,
                 description String,
                 status String
             ) ENGINE = MergeTree()
@@ -63,9 +63,11 @@ class LogDataBase {
     }*/
 
     private fun prepareStatement() {
-        preparedStatement = connection.prepareStatement("""
-            INSERT INTO message_logs (hostname, project, userId, eventName, date, description, status) VALUES (?,?,?,?, parseDateTimeBestEffort(?),?,?);
-        """.trimIndent())
+        preparedStatement = connection.prepareStatement(
+            """
+            INSERT INTO message_logs (hostname, project, userId, eventName, dateNotify, description, status) VALUES (?,?,?,?, ?,?,?);
+        """.trimIndent()
+        )
     }
 
     fun insertLog(log: MessageLogDao) {

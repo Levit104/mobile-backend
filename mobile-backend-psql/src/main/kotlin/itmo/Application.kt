@@ -22,9 +22,9 @@ var jedisPool = JedisPool(poolConfig)
 
 private fun buildPoolConfig(): JedisPoolConfig {
     val poolConfig = JedisPoolConfig()
-    poolConfig.maxTotal = 1000
-    poolConfig.maxIdle = 1000
-    poolConfig.minIdle = 10
+    poolConfig.maxTotal = 5000
+    poolConfig.maxIdle = 5000
+    poolConfig.minIdle = 200
     poolConfig.setMaxWait(Duration.ofSeconds(30))
     poolConfig.testOnBorrow = true
     poolConfig.testOnReturn = true
