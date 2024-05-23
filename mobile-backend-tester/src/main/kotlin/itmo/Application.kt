@@ -5,6 +5,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.serialization.kotlinx.json.*
 import itmo.plugins.startTest
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
 suspend fun main() {
@@ -16,6 +17,7 @@ suspend fun main() {
 
 //val logger = LoggerFactory.getLogger("my")
 
+@OptIn(ExperimentalSerializationApi::class)
 val client = HttpClient(CIO) {
     engine {
         endpoint.maxConnectionsPerRoute = 250
@@ -28,6 +30,7 @@ val client = HttpClient(CIO) {
     }
     install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
         json(Json {
+            explicitNulls = false
             prettyPrint = true
             isLenient = true
         })

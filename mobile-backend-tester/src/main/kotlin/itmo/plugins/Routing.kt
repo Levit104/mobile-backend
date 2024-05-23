@@ -9,9 +9,6 @@ import io.ktor.server.routing.*
 import itmo.client
 import itmo.models.User
 
-
-
-
 fun Application.configureRouting() {
     routing {
         get("/") {
