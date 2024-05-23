@@ -17,6 +17,7 @@ import itmo.util.sendPost
 // TODO: 10.04.2024
 fun Route.scriptRouting() {
     route("scripts") {
+        // FIXME не используется
         get {
             val userId = parseClaim<String>("userId", call)
 
@@ -33,6 +34,7 @@ fun Route.scriptRouting() {
                 call.respond(response.status, response.bodyAsText())
             }
         }
+        // FIXME не используется
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
@@ -53,6 +55,7 @@ fun Route.scriptRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
         }
+        // FIXME не используется
         post {
             val script = call.receive<ScriptDao>()
 

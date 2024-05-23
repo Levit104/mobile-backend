@@ -10,31 +10,24 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.cache.model.RoomDAO
 import itmo.plugins.client
-import itmo.util.log
-import itmo.util.parseClaim
-import itmo.util.sendPost
+import itmo.util.*
 
 // TODO: 10.04.2024  
 fun Route.roomRouting() {
     route("rooms") {
         get {
             val userId = parseClaim<String>("userId", call)
-
-            val response: HttpResponse = client.get("http://localhost:8080/rooms") {
-                url {
-                    parameters.append("userId", userId)
-                }
-            }
+            val response = sendGet("http://localhost:8080/rooms", "userId", userId)
 
             if (response.status == HttpStatusCode.OK) {
-                log("room get", userId, "Получены комнаты пользователя", "success")
-                call.respond(HttpStatusCode.OK, response.body<List<RoomDAO>>())
+                log("GET /rooms?userId=$userId", userId, "Получение всех комнат у пользователя #$userId", "success")
+                call.respond(response.body<List<RoomDAO>>())
             } else {
-                log("room get", userId, "Не удалось получить комнаты пользователя", "fail")
+                log("GET /rooms?userId=$userId", userId, response.bodyAsText(), "fail")
                 call.respond(response.status, response.bodyAsText())
             }
         }
-
+        // FIXME не используется
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
@@ -45,7 +38,7 @@ fun Route.roomRouting() {
 
                 if (response.status == HttpStatusCode.OK) {
                     log("room get id", userId, "Получена комната пользователя по id $id", "success")
-                    call.respond(HttpStatusCode.OK, response.body<RoomDAO>())
+                    call.respond(response.body<RoomDAO>())
                 } else {
                     log("room get id", userId, "${response.bodyAsText()} id $id", "fail")
                     call.respond(response.status, response.bodyAsText())
@@ -57,46 +50,33 @@ fun Route.roomRouting() {
         }
         post {
             val room = call.receive<RoomDAO>()
-
             val userId = parseClaim<String>("userId", call)
-
-            val response: HttpResponse = sendPost(
+            val response = sendPost(
                 "http://localhost:8080/rooms",
                 RoomDAO(null, room.name, userId.toLong())
             )
 
             if (response.status == HttpStatusCode.OK) {
-                log("room post", userId, "Комната успешно добавлена! ${room.name}", "success")
-                call.respond(HttpStatusCode.OK, response.bodyAsText())
+                log(
+                    "POST /rooms",
+                    userId,
+                    "Добавлена комната #${response.bodyAsText()} пользователю #${userId}",
+                    "success"
+                )
             } else {
-                log("room post", userId, "Ошибка при добавлении комнаты ${room.name}", "fail")
-                call.respond(response.status, response.bodyAsText())
+                log("POST /rooms", userId, response.bodyAsText(), "fail")
             }
-        }
 
+            call.respond(response.status, response.bodyAsText())
+        }
         delete {
             val userId = parseClaim<String>("userId", call)
-
             val roomId = call.request.queryParameters["roomId"]?.toIntOrNull()
+            val response = sendDelete("http://localhost:8080/rooms", "roomId", roomId.toString())
 
-            if (roomId !== null) {
-                val response: HttpResponse = client.delete("http://localhost:8080/rooms") {
-                    url {
-                        parameters.append("roomId", roomId.toString())
-                    }
-                }
-
-                if (response.status == HttpStatusCode.OK) {
-                    log("room delete", userId, "Успешно удалилась", "success")
-                    call.respond(HttpStatusCode.OK, "Успешно удалилась")
-                } else {
-                    log("room delete", userId, "Не удалось удалить $roomId", "fail")
-                    call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
-                }
-            } else {
-                log("room delete", userId, "Нет id", "fail")
-                call.respond(HttpStatusCode.BadRequest, "Нет id")
-            }
+            val logStatus = if (response.status == HttpStatusCode.OK) "success" else "fail"
+            log("DELETE /rooms?roomId=$roomId", userId, response.bodyAsText(), logStatus)
+            call.respond(response.status, response.bodyAsText())
         }
     }
 }

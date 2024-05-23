@@ -52,25 +52,25 @@ val deviceTypeRedisRepository = DeviceTypeRedisRepository()
 fun Application.configureRouting() {
     jedisPool.resource.flushAll()
     launch {
-        val response: HttpResponse = client.get("http://localhost:8080/device-types")
+        val response = client.get("http://localhost:8080/device-types")
 
         if (response.status == HttpStatusCode.OK) {
-            log("device-types get", "-1", "Получены все типы устройств", "success")
+            log("launch 1", "-1", "Получение всех типов девайсов при запуске", "success")
             val types = response.body<List<DeviceTypeDAO>>()
             types.forEach { type -> deviceTypeRedisRepository.addItem(type.id.toString(), type.name) }
         } else {
-            log("device-types get", "-1", response.bodyAsText(), "fail")
+            log("launch 1", "-1", response.bodyAsText(), "fail")
         }
     }
     launch {
-        val response: HttpResponse = client.get("http://localhost:8080/actions")
+        val response = client.get("http://localhost:8080/actions")
 
         if (response.status == HttpStatusCode.OK) {
-            log("actions get", "-1", "Получены все действия", "success")
+            log("launch 2", "-1", "Получение всех действий при запуске", "success")
             val actions = response.body<List<ActionDTO>>()
             actions.forEach { action -> actionRedisRepository.addItem(action.id.toString(), action) }
         } else {
-            log("actions get", "-1", response.bodyAsText(), "fail")
+            log("launch 2", "-1", response.bodyAsText(), "fail")
         }
     }
     routing {
@@ -87,20 +87,21 @@ fun Application.configureRouting() {
         }
         post("/signUp") {
             val user = call.receive<UserDAO>()
+
             if (userRedisRepository.isItemExists(user.login)) {
-                log("signUp post cash", "-1", "Пользователь с таким логином существует!", "fail")
-                call.respond(HttpStatusCode.Conflict, "Пользователь с таким логином существует!")
+                log("POST /signUp", "-1", "Пользователь с login=${user.login} уже существует!", "fail")
+                call.respond(HttpStatusCode.Conflict, "Пользователь с login=${user.login} уже существует!")
             } else {
-                val response: HttpResponse = sendPost("http://localhost:8080/users", user)
-                if (response.status != HttpStatusCode.OK) {
-                    log("signUp post", "-1", "Ошибка при создании пользователя!", "fail")
-                    call.respond(HttpStatusCode.Conflict, "Ошибка при создании пользователя!")
-                } else {
+                val response = sendPost("http://localhost:8080/users", user)
+                if (response.status == HttpStatusCode.OK) {
                     user.id = response.body<String>().toLong()
                     userRedisRepository.addItem(user.id.toString(), user, 30000000)
 
-                    log("signUp post", "${user.id}", "Пользователь с логином ${user.login} успешно создан!", "success")
+                    log("POST /signUp", "${user.id}", "Пользователь с логином ${user.login} успешно создан!", "success")
                     call.respond(HttpStatusCode.Created, "Пользователь с логином ${user.login} успешно создан!")
+                } else {
+                    log("POST /signUp", "-1", response.bodyAsText(), "fail")
+                    call.respond(response.status, response.bodyAsText())
                 }
             }
         }
@@ -113,19 +114,19 @@ fun Application.configureRouting() {
                 isAuthorized = obj.password.equals(user.password)
                 userId = obj.id.toString()
 
-                log("signIn post cash", userId, "Пользователь получен из кэша", "success")
+                log("POST /signIn", userId, "Пользователь #$userId получен из кэша", "success")
             } else {
-                val response: HttpResponse = client.get("http://localhost:8080/users/${user.login}")
+                val response = client.get("http://localhost:8080/users/${user.login}")
                 if (response.status == HttpStatusCode.OK) {
                     val userDAO = response.body<UserDAO>()
                     isAuthorized = userDAO.password == user.password
                     userRedisRepository.addItem(userDAO.id.toString(), userDAO, 30000000)
                     userId = userDAO.id.toString()
 
-                    log("signIn post", userId, "Пользователь получен из бд", "success")
+                    log("POST /signIn", userId, "Пользователь #$userId получен из из БД", "success")
                 } else {
-                    log("signIn post", "-1", "Пользователь не существует", "fail")
-                    call.respond(HttpStatusCode.Unauthorized, "Пользователь не существует")
+                    log("POST /signIn", "-1", response.bodyAsText(), "fail")
+                    call.respond(response.status, response.bodyAsText())
                 }
             }
             if (isAuthorized) {
@@ -137,10 +138,10 @@ fun Application.configureRouting() {
                     .withExpiresAt(Date(System.currentTimeMillis() + 30000000))
                     .sign(Algorithm.HMAC256(Config.SECRET.toString()))
 
-                log("signIn post", userId, "Токен создан $token", "success")
+                log("POST /signIn", userId, "Токен создан $token", "success")
                 call.respond(token)
             } else {
-                log("signIn post", userId, "Неправильный логин или пароль", "fail")
+                log("POST /signIn", userId, "Неправильный логин или пароль", "fail")
                 call.respond(HttpStatusCode.Unauthorized, "Неправильный логин или пароль")
             }
         }

@@ -6,9 +6,7 @@ import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import itmo.dao.ActionDAO
-import itmo.dao.DeviceDAO
-import itmo.dao.StateDAO
+import itmo.dao.*
 import itmo.models.Action
 import itmo.models.Device
 import itmo.models.State
@@ -26,6 +24,8 @@ fun Route.deviceRouting() {
     val deviceDAO = DeviceDAO()
     val actionDAO = ActionDAO()
     val stateDAO = StateDAO()
+    val roomDAO = RoomDAO()
+    val typeDAO = DeviceTypeDAO()
 
     route("devices") {
         get {
@@ -103,7 +103,14 @@ fun Route.deviceRouting() {
                     throw BadRequestException("Некорректное значение одного или нескольких полей - name, typeId, userId")
                 }
 
-                // TODO проверка UNIQUE у пользователя
+                if (entity.roomId != null && roomDAO.findById(entity.roomId) == null) {
+                    throw BadRequestException("Комната #${entity.roomId} не существует")
+                }
+
+                if (typeDAO.findById(entity.typeId) == null) {
+                    throw BadRequestException("Тип девайса #${entity.typeId} не существует")
+                }
+
                 val deviceId = deviceDAO.insert(entity)
                 val actions = actionDAO.findAllByDeviceType(entity.typeId)
                 val states = mutableListOf<State>()
@@ -132,7 +139,7 @@ fun Route.deviceRouting() {
                     "fail"
                 )
 
-                call.respond(HttpStatusCode.BadRequest, "Ошибка при добавлении устройства: ${e.message}")
+                call.respond(HttpStatusCode.BadRequest, "Ошибка при добавлении девайса: ${e.message}")
             }
         }
         delete {
@@ -143,9 +150,13 @@ fun Route.deviceRouting() {
                     throw BadRequestException("Указан некорректный id=$id")
                 }
 
+                if (deviceDAO.findById(id) == null) {
+                    throw BadRequestException("Девайс #$id не существует")
+                }
+
                 deviceDAO.deleteById(id)
                 log("DELETE /devices?deviceId=$id", "-1", "Девайс #$id удалён", "success")
-                call.respond(HttpStatusCode.OK, "Девайс $id удалён")
+                call.respond("Девайс #$id удалён")
 
             } catch (e: BadRequestException) {
                 log(

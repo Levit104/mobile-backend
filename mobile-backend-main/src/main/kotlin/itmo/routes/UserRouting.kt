@@ -8,6 +8,7 @@ import itmo.util.parseClaim
 
 fun Route.userRouting() {
     route("user") {
+        // FIXME не используется
         get {
 
             val username = parseClaim<String>("username", call)

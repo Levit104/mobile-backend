@@ -17,6 +17,7 @@ import itmo.util.sendPost
 // TODO: 10.04.2024
 fun Route.conditionRouting() {
     route("conditions") {
+        // FIXME не используется
         get {
             val userId = parseClaim<String>("userId", call)
 
@@ -30,6 +31,7 @@ fun Route.conditionRouting() {
                 call.respond(response.status, response.bodyAsText())
             }
         }
+        // FIXME не используется
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
@@ -50,7 +52,7 @@ fun Route.conditionRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
         }
-
+        // FIXME не используется
         post {
             val condition = call.receive<ConditionDAO>()
 

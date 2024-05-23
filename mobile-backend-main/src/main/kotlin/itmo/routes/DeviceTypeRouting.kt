@@ -20,24 +20,24 @@ fun Route.deviceTypeRouting() {
     route("device-types") {
         get {
             val userId = parseClaim<String>("userId", call)
-
             val types = deviceTypeRedisRepository.getItems()
+
             if (types.isNotEmpty()) {
-                log("device-types get", userId, "Получены все типы устройств из кэша", "success")
-                call.respond(HttpStatusCode.OK, types)
+                log("GET /device-types", userId, "Получение всех типов девайсов из кэша", "success")
+                call.respond(types)
             } else {
-                val response: HttpResponse = client.get("http://localhost:8080/device-types")
+                val response = client.get("http://localhost:8080/device-types")
 
                 if (response.status == HttpStatusCode.OK) {
-                    log("device-types get", userId, "Получены все типы устройств", "success")
-                    call.respond(HttpStatusCode.OK, response.body<List<DeviceTypeDAO>>())
+                    log("GET /device-types", userId, "Получение всех типов девайсов из БД", "success")
+                    call.respond(response.body<List<DeviceTypeDAO>>())
                 } else {
-                    log("device-types get", userId, response.bodyAsText(), "fail")
+                    log("GET /device-types", userId, response.bodyAsText(), "fail")
                     call.respond(response.status, response.bodyAsText())
                 }
             }
         }
-
+        // FIXME не используется
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
@@ -63,7 +63,7 @@ fun Route.deviceTypeRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
         }
-
+        // FIXME не используется
         post {
             val deviceType = call.receive<DeviceTypeDAO>()
 

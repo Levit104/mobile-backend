@@ -13,6 +13,14 @@ suspend fun sendPost(url: String, body: Any) = client.post(url) {
     setBody(body)
 }
 
+suspend fun sendGet(url: String, paramName: String, paramValue: String) = client.get(url) {
+    parameter(paramName, paramValue)
+}
+
+suspend fun sendDelete(url: String, paramName: String, paramValue: String) = client.delete(url) {
+    parameter(paramName, paramValue)
+}
+
 inline fun <reified T : Any> parseClaim(param: String, call: ApplicationCall): T {
     val principal = call.principal<JWTPrincipal>()
     return Json.decodeFromString<T>(principal!!.payload.getClaim(param).toString())

@@ -93,7 +93,10 @@ fun Route.actionRouting() {
                     "success"
                 )
 
-                call.respond(stateId)
+                call.respond(
+                    "Выполнено действие #${entity.id} у девайса #${entity.deviceId}, " +
+                            "состояние #$stateId изменено на ${entity.parameter}"
+                )
 
             } catch (e: BadRequestException) {
                 log(
