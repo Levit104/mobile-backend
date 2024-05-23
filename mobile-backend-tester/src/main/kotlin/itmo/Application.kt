@@ -10,6 +10,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
+import java.time.Duration
 
 
 suspend fun main() {
@@ -26,14 +27,12 @@ var jedisPool = JedisPool(poolConfig)
 
 private fun buildPoolConfig(): JedisPoolConfig {
     val poolConfig = JedisPoolConfig()
-    poolConfig.maxTotal = 128
-    poolConfig.maxIdle = 128
-    poolConfig.minIdle = 16
+    poolConfig.maxTotal = 10000
+    poolConfig.maxIdle = 10000
+    poolConfig.minIdle = 100
+    poolConfig.setMaxWait(Duration.ofSeconds(30))
     poolConfig.testOnBorrow = true
     poolConfig.testOnReturn = true
-    poolConfig.testWhileIdle = true
-    poolConfig.numTestsPerEvictionRun = 3
-    poolConfig.blockWhenExhausted = true
     return poolConfig
 }
 

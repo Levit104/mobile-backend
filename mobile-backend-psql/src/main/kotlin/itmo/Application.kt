@@ -9,6 +9,7 @@ import itmo.plugins.configureSerialization
 import itmo.util.log
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
+import java.time.Duration
 
 fun main() {
     log("start", "-1", "Psql сервис начал свою работу", "success")
@@ -21,14 +22,12 @@ var jedisPool = JedisPool(poolConfig)
 
 private fun buildPoolConfig(): JedisPoolConfig {
     val poolConfig = JedisPoolConfig()
-    poolConfig.maxTotal = 128
-    poolConfig.maxIdle = 128
-    poolConfig.minIdle = 16
+    poolConfig.maxTotal = 1000
+    poolConfig.maxIdle = 1000
+    poolConfig.minIdle = 10
+    poolConfig.setMaxWait(Duration.ofSeconds(30))
     poolConfig.testOnBorrow = true
     poolConfig.testOnReturn = true
-    poolConfig.testWhileIdle = true
-    poolConfig.numTestsPerEvictionRun = 3
-    poolConfig.blockWhenExhausted = true
     return poolConfig
 }
 

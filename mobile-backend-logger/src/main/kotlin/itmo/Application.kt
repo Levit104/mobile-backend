@@ -9,6 +9,7 @@ import itmo.plugins.*
 import kotlinx.coroutines.launch
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
+import java.time.Duration
 
 lateinit var logDB: LogDataBase
 fun main() {
@@ -26,14 +27,12 @@ var jedisPool = JedisPool(poolConfig)
 
 private fun buildPoolConfig(): JedisPoolConfig {
     val poolConfig = JedisPoolConfig()
-    poolConfig.maxTotal = 128
-    poolConfig.maxIdle = 128
-    poolConfig.minIdle = 16
+    poolConfig.maxTotal = 10
+    poolConfig.maxIdle = 10
+    poolConfig.minIdle = 3
+    poolConfig.setMaxWait(Duration.ofSeconds(30))
     poolConfig.testOnBorrow = true
     poolConfig.testOnReturn = true
-    poolConfig.testWhileIdle = true
-    poolConfig.numTestsPerEvictionRun = 3
-    poolConfig.blockWhenExhausted = true
     return poolConfig
 }
 
