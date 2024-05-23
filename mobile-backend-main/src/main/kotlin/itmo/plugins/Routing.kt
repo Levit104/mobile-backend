@@ -17,13 +17,13 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.Config
 import itmo.cache.model.*
+import itmo.jedisPool
 import itmo.routes.*
 import itmo.util.log
 import itmo.util.sendPost
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import redis.clients.jedis.Jedis
 import java.util.*
 
 
@@ -35,7 +35,7 @@ val client = HttpClient(CIO) {
         maxConnectionsCount = 1000
     }
     install(HttpTimeout) {
-        connectTimeoutMillis = 1000
+        connectTimeoutMillis = 5000
     }
     install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
         json(Json {
@@ -50,7 +50,7 @@ val actionRedisRepository = ActionRedisRepository()
 val deviceTypeRedisRepository = DeviceTypeRedisRepository()
 
 fun Application.configureRouting() {
-    Jedis().flushAll()
+    jedisPool.resource.flushAll()
     launch {
         val response: HttpResponse = client.get("http://localhost:8080/device-types")
 
