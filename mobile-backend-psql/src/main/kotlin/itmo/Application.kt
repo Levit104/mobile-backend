@@ -6,10 +6,12 @@ import io.ktor.server.netty.*
 import itmo.plugins.configureDatabase
 import itmo.plugins.configureRouting
 import itmo.plugins.configureSerialization
+import itmo.util.log
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 
 fun main() {
+    log("start", "-1", "Psql сервис начал свою работу", "success")
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }

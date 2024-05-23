@@ -5,6 +5,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.serialization.kotlinx.json.*
 import itmo.plugins.startTest
+import itmo.util.log
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import redis.clients.jedis.JedisPool
@@ -14,6 +15,7 @@ import redis.clients.jedis.JedisPoolConfig
 suspend fun main() {
 //    val engine = embeddedServer(Netty, port = 8085, host = "0.0.0.0", module = Application::module)
 //        .start(wait = true)
+    log("start", "-1", "Tester начал свою работу", "success")
     startTest()
     client.close()
     jedisPool.destroy()
