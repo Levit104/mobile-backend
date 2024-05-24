@@ -6,7 +6,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import itmo.models.*
 import itmo.util.log
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -35,10 +34,7 @@ class ClientImitator(private val id: Int) {
 
         repeat((3..5).random()) { idx ->
             println("$id $idx")
-            val function = functionList.random()
-            try {
-                function()
-            } catch (e: NoTransformationFoundException) { }
+            functionList.random()()
         }
     }
 
@@ -144,7 +140,8 @@ class ClientImitator(private val id: Int) {
         val deviceId = devices.random().id
         log("getDeviceInfo", "$id", "Отправлен запрос на получение девайса $deviceId", "success")
         val response: HttpResponse = sendGet("http://localhost:8082/devices/$deviceId", true)
-        return response.body<DeviceInfo>()
+
+        return if (response.status == HttpStatusCode.OK) response.body<DeviceInfo>() else null
     }
 
     private suspend fun executeAction() {

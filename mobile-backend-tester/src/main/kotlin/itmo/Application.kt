@@ -39,8 +39,8 @@ private fun buildPoolConfig(): JedisPoolConfig {
 @OptIn(ExperimentalSerializationApi::class)
 val client = HttpClient(CIO) {
     engine {
-        endpoint.maxConnectionsPerRoute = 100
-        maxConnectionsCount = 1000
+        endpoint.maxConnectionsPerRoute = 500
+        maxConnectionsCount = 10000
         endpoint.connectAttempts = 5
         endpoint.keepAliveTime = 1
     }

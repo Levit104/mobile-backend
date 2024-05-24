@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 suspend fun startTest() {
     coroutineScope {
         val startTime = System.currentTimeMillis()
-        repeat(1000) { index ->
+        repeat(10000) { index ->
             launch {
                 ClientImitator(index + 1).init()
             }
