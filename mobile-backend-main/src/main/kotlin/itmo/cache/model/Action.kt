@@ -40,7 +40,7 @@ class ActionRedisRepository : RedisRepository<ActionDTO, ActionDTO> {
         return isExists
     }
 
-    fun addRelation(deviceTypeId: String, actionId: String, time: Long = 600_000) {
+    fun addRelation(deviceTypeId: String, actionId: String, time: Long = 60_000) {
         val con = jedis
         con.sadd("deviceType_action#$deviceTypeId", actionId)
         con.pexpire("deviceType_action#$deviceTypeId", time)

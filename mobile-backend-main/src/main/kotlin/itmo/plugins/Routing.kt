@@ -32,7 +32,7 @@ val userRedisRepository = UserRedisRepository()
 val client = HttpClient(CIO) {
     engine {
         endpoint.maxConnectionsPerRoute = 100
-        maxConnectionsCount = 10000
+        maxConnectionsCount = 1000
     }
     install(HttpTimeout) {
         connectTimeoutMillis = 5000

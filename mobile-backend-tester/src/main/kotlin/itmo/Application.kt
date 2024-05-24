@@ -39,13 +39,13 @@ private fun buildPoolConfig(): JedisPoolConfig {
 @OptIn(ExperimentalSerializationApi::class)
 val client = HttpClient(CIO) {
     engine {
-        endpoint.maxConnectionsPerRoute = 500
-        maxConnectionsCount = 10000
-        endpoint.connectAttempts = 5
+        endpoint.maxConnectionsPerRoute = 10
+        maxConnectionsCount = 100
+        endpoint.connectAttempts = 10
         endpoint.keepAliveTime = 1
     }
     install(HttpTimeout) {
-        connectTimeoutMillis = 30000
+        connectTimeoutMillis = 60000
     }
     install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
         json(Json {

@@ -1,19 +1,20 @@
 package itmo.plugins
 
 import itmo.ClientImitator
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
 suspend fun startTest() {
     coroutineScope {
         val startTime = System.currentTimeMillis()
-        repeat(10000) { index ->
-            launch {
-                ClientImitator(index + 1).init()
+        async {
+            repeat(1000) { index ->
+                launch {
+                    ClientImitator(index + 1).init()
+                }
             }
-        }
-        joinAll()
-        println((System.currentTimeMillis() - startTime) / 1000)
+        }.await()
+        println((System.currentTimeMillis() - startTime) / 1000.0)
     }
 }

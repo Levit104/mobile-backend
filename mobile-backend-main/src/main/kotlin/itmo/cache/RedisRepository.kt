@@ -7,7 +7,7 @@ interface RedisRepository<T, V> {
     val jedis: Jedis
         get() = jedisPool.resource
 
-    suspend fun addItem(name: String, item: T, time: Long = 600_000)
+    suspend fun addItem(name: String, item: T, time: Long = 60_000)
 
     suspend fun getItem(name: String): V
 

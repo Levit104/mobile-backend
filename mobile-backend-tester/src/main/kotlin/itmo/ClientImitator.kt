@@ -6,6 +6,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import itmo.models.*
 import itmo.util.log
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -26,16 +27,22 @@ class ClientImitator(private val id: Int) {
     )
 
     suspend fun init() {
-        println("Up $id")
+        simulateWait()
         signUp()
-
-        println("In $id")
+        println("Up $id")
+        simulateWait()
         signIn()
-
+        println("In $id")
+        simulateWait()
         repeat((3..5).random()) { idx ->
-            println("$id $idx")
+            simulateWait()
             functionList.random()()
+            println("$id $idx")
         }
+    }
+
+    private suspend fun simulateWait() {
+        delay((1000L..20000L).random())
     }
 
     private suspend fun sendPost(url: String, body: Any, auth: Boolean = false) = client.post(url) {
