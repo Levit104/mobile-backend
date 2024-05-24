@@ -7,6 +7,8 @@ import io.ktor.http.*
 import itmo.models.*
 import itmo.util.log
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class ClientImitator(private val id: Int) {
     private val login: String = "user$id"
@@ -31,22 +33,13 @@ class ClientImitator(private val id: Int) {
         println("In $id")
         signIn()
 
-        repeat((5..10).random()) { idx ->
+        repeat((3..5).random()) { idx ->
             println("$id $idx")
-            functionList.random()()
+            val function = functionList.random()
+            try {
+                function()
+            } catch (e: NoTransformationFoundException) { }
         }
-//        runBlocking {
-//            async {
-//                println("Up $id")
-//                signUp() }.await()
-//            async {
-//                println("In $id")
-//                signIn() }.await()
-//            repeat((5..10).random()) { idx ->
-//                println("$id $idx")
-//                functionList.random()()
-//            }
-//        }
     }
 
     private suspend fun sendPost(url: String, body: Any, auth: Boolean = false) = client.post(url) {
@@ -80,7 +73,7 @@ class ClientImitator(private val id: Int) {
         log("signIn post", "$id", "Отправлен запрос на вход", "success")
         val response: HttpResponse = sendPost("http://localhost:8082/signIn", User(login, password))
         if (response.status == HttpStatusCode.OK) {
-            runBlocking {
+            Mutex().withLock {
                 jwt = response.bodyAsText()
             }
         }
