@@ -1,7 +1,6 @@
 package itmo.routes
 
 import io.ktor.client.call.*
-import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -9,11 +8,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import itmo.cache.model.*
-import itmo.plugins.client
 import itmo.plugins.userRedisRepository
-import itmo.util.log
-import itmo.util.parseClaim
-import itmo.util.sendPost
+import itmo.util.*
 
 val deviceRedisRepository = DeviceRedisRepository()
 val actionRedisRepository = ActionRedisRepository()
@@ -36,21 +32,19 @@ fun Route.deviceRouting() {
         get {
             val username = parseClaim<String>("username", call)
             val userId = parseClaim<String>("userId", call)
+
             if (userRedisRepository.isItemExists(username) && deviceRedisRepository.isItemsExistsByUser(userId)) {
-                log("devices get cash", userId, "Устройства получены из кэша", "success")
+                log("GET /devices", userId, "Получение всех девайсов у пользователя #$userId из кэша", "success")
                 call.respond(deviceRedisRepository.getItemsByUser(userId))
             } else {
-                val response: HttpResponse = client.get("http://localhost:8080/devices") {
-                    url {
-                        parameters.append("userId", userId)
-                    }
-                }
+                val response = sendGet("http://localhost:8080/devices", "userId", userId)
+
                 if (response.status == HttpStatusCode.OK) {
-                    log("devices get", userId, "Устройства получены успешно", "success")
+                    log("GET /devices", userId, "Получение всех девайсов у пользователя #$userId из БД", "success")
                     call.respond(response.body<List<DeviceDAO>>())
                 } else {
-                    log("devices get", userId, "Ошибочка, какая хз", "fail")
-                    call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
+                    log("GET /devices", userId, response.bodyAsText(), "fail")
+                    call.respond(response.status, response.bodyAsText())
                 }
             }
         }
@@ -65,75 +59,59 @@ fun Route.deviceRouting() {
                 actionRedisRepository.isItemsExistsByDeviceTypeId(deviceRedisRepository.getItem(id.toString()).typeId.toString())
             ) {
                 val device = deviceRedisRepository.getItem(id.toString())
-                log("devices get id cash", userId, "Устройство получено из кэша id $id", "success")
+                log("GET /devices/$id", userId, "Получен девайс #$id из кэша", "success")
                 val actions = actionRedisRepository.getItemsByDeviceTypeId(device.typeId.toString())
-                log("devices get id cash", userId, "Действия получены из кэша id $id", "success")
+                log("GET /devices/$id", userId, "Получены действия из кэша", "success")
                 val states = stateRedisRepository.getItemsByDeviceId(id.toString())
-                log("devices get id cash", userId, "Состояния получены из кэша id $id", "success")
+                log("GET /devices/$id", userId, "Получены состояния из кэша", "success")
                 call.respond(DeviceInfo(device, actions, states))
-            } else if (id != null) {
-                val response: HttpResponse = client.get("http://localhost:8080/devices/$id") {
-                    url {
-                        parameters.append("userId", userId)
-                    }
-                }
+            } else {
+                val response = sendGet("http://localhost:8080/devices/$id", "userId", userId)
 
                 if (response.status == HttpStatusCode.OK) {
-                    log("devices get id", userId, "Устройство получено успешно id $id", "success")
+                    log("GET /devices/$id", userId, "Получена информация о девайсе #$id из БД", "success")
                     val deviceInfo = response.body<DeviceInfo>()
                     addDeviceToRedis(deviceInfo)
                     call.respond(deviceInfo)
+                } else {
+                    log("GET /devices/$id", userId, response.bodyAsText(), "fail")
+                    call.respond(response.status, response.bodyAsText())
                 }
-            } else {
-                log("devices get id", userId, "Устройство не существует или у вас нет доступа!", "fail")
-                call.respond(HttpStatusCode.Forbidden, "Устройство не существует или у вас нет доступа!")
             }
         }
-
         post {
             val device = call.receive<DeviceDAO>()
 
             val userId = parseClaim<String>("userId", call)
 
-            val response: HttpResponse = sendPost(
+            val response = sendPost(
                 "http://localhost:8080/devices",
                 DeviceDAO(null, device.name, device.typeId, device.roomId, userId.toLong())
             )
 
             if (response.status == HttpStatusCode.OK) {
-                log("devices post", userId, "Устройство успешно добавлено! ${device.name}", "success")
+                log(
+                    "POST /devices",
+                    userId,
+                    "Добавлен девайс с названием ${device.name} пользователю #${userId}",
+                    "success"
+                )
                 val deviceInfo = response.body<DeviceInfo>()
                 addDeviceToRedis(deviceInfo)
-                call.respond(HttpStatusCode.OK, response.bodyAsText())
+                call.respond(deviceInfo)
             } else {
-                log("devices post", userId, "Произошла ошибка при добавлении устройства ${device.name}", "fail")
-                call.respond(HttpStatusCode.BadRequest, "Произошла ошибка при добавлении устройства")
+                log("POST /devices", userId, response.bodyAsText(), "fail")
+                call.respond(response.status, response.bodyAsText())
             }
         }
-
-        delete {
+        delete("{id}") {
             val userId = parseClaim<String>("userId", call)
+            val id = call.parameters["id"]?.toIntOrNull()
+            val response = sendDelete("http://localhost:8080/devices/$id")
 
-            val deviceId = call.request.queryParameters["deviceId"]?.toIntOrNull()
-
-            if (deviceId !== null) {
-                val response: HttpResponse = client.delete("http://localhost:8080/devices") {
-                    url {
-                        parameters.append("deviceId", deviceId.toString())
-                    }
-                }
-
-                if (response.status == HttpStatusCode.OK) {
-                    log("devices delete", userId, "Успешно удалилось действие", "success")
-                    call.respond(HttpStatusCode.OK, "Успешно удалилось")
-                } else {
-                    log("devices delete", userId, "Не удалось удалить $deviceId", "fail")
-                    call.respond(HttpStatusCode.NoContent, "Ошибочка, какая хз")
-                }
-            } else {
-                log("devices delete", userId, "Нет id", "fail")
-                call.respond(HttpStatusCode.BadRequest, "Нет id")
-            }
+            val logStatus = if (response.status == HttpStatusCode.OK) "success" else "fail"
+            log("DELETE /devices/$id", userId, response.bodyAsText(), logStatus)
+            call.respond(response.status, response.bodyAsText())
         }
     }
 }

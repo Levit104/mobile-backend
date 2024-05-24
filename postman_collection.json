@@ -168,19 +168,14 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8082/devices?deviceId=1",
+							"raw": "localhost:8082/devices/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8082",
 							"path": [
-								"devices"
-							],
-							"query": [
-								{
-									"key": "deviceId",
-									"value": "1"
-								}
+								"devices",
+								"1"
 							]
 						}
 					},
@@ -280,19 +275,14 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8082/rooms?roomId=1",
+							"raw": "localhost:8082/rooms/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8082",
 							"path": [
-								"rooms"
-							],
-							"query": [
-								{
-									"key": "roomId",
-									"value": "1"
-								}
+								"rooms",
+								"1"
 							]
 						}
 					},

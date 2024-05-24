@@ -69,14 +69,13 @@ fun Route.roomRouting() {
 
                 val notValid = entity.name.isBlank() || entity.userId <= 0
                 if (notValid) {
-                    throw BadRequestException("Некорректное значение одного или нескольких полей - name, typeId, userId")
+                    throw BadRequestException("Некорректное значение одного или нескольких полей - name, userId")
                 }
 
-                // TODO проверка UNIQUE у пользователя
                 log(
                     "POST /rooms",
                     "${entity.userId}",
-                    "insert room name ${entity.name}",
+                    "Добавлена комната с именем ${entity.name} пользователю #${entity.userId}",
                     "success"
                 )
 
@@ -93,22 +92,25 @@ fun Route.roomRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Ошибка при выполнении действия: ${e.message}")
             }
         }
-        delete {
-            val id = call.request.queryParameters["roomId"]?.toIntOrNull()
+        delete("{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
 
             try {
-
                 if (id == null || id <= 0) {
                     throw BadRequestException("Указан некорректный id=$id")
                 }
 
+                if (dao.findById(id) == null) {
+                    throw BadRequestException("Комната #$id не существует")
+                }
+
                 dao.deleteById(id)
-                log("DELETE /rooms?roomId=$id", "-1", "Комната #$id удалёна", "success")
-                call.respond(HttpStatusCode.OK, "Комната $id удалена")
+                log("DELETE /rooms/$id", "-1", "Комната #$id удалёна", "success")
+                call.respond(HttpStatusCode.OK, "Комната #$id удалена")
 
             } catch (e: BadRequestException) {
                 log(
-                    "DELETE /rooms?roomId=$id",
+                    "DELETE /rooms/$id",
                     "-1",
                     "Ошибка при удалении комнаты: ${e.message}",
                     "fail"
@@ -116,8 +118,6 @@ fun Route.roomRouting() {
 
                 call.respond(HttpStatusCode.BadRequest, "Ошибка при удалении комнаты: ${e.message}")
             }
-
-
         }
     }
 }

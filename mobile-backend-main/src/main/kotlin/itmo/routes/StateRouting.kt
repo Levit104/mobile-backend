@@ -17,6 +17,7 @@ import itmo.util.sendPost
 // TODO: 10.04.2024
 fun Route.stateRouting() {
     route("states") {
+        // FIXME не используется
         get {
             val response: HttpResponse = client.get("http://localhost:8080/states")
 
@@ -30,6 +31,7 @@ fun Route.stateRouting() {
                 call.respond(response.status, response.bodyAsText())
             }
         }
+        // FIXME не используется
         get("{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
 
@@ -50,6 +52,7 @@ fun Route.stateRouting() {
                 call.respond(HttpStatusCode.BadRequest, "Нет id")
             }
         }
+        // FIXME не используется
         post {
             val stateDAO = call.receive<StateDAO>()
 
@@ -65,7 +68,7 @@ fun Route.stateRouting() {
                 call.respond(response.status, response.bodyAsText())
             }
         }
-
+        // FIXME не используется
         put {
             val stateDAO = call.receive<StateDAO>()
 

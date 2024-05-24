@@ -56,9 +56,8 @@ class ClientImitator(private val id: Int) {
         }
     }
 
-    private suspend fun sendDelete(url: String, paramName: String, id: Int, auth: Boolean = false) =
+    private suspend fun sendDelete(url: String, auth: Boolean = false) =
         client.delete(url) {
-            parameter(paramName, id)
             if (auth) {
                 bearerAuth(jwt)
             }
@@ -177,12 +176,7 @@ class ClientImitator(private val id: Int) {
         val roomId = rooms.random().id!!
 
         log("deleteRoom", "$id", "Отправлен запрос на удаление комнаты $roomId", "success")
-        sendDelete(
-            "http://localhost:8082/rooms",
-            "roomId",
-            roomId,
-            true
-        )
+        sendDelete("http://localhost:8082/rooms/$roomId", true)
     }
 
     private suspend fun deleteDevice() {
@@ -195,11 +189,6 @@ class ClientImitator(private val id: Int) {
         val deviceId = devices.random().id!!
 
         log("deleteDevice", "$id", "Отправлен запрос на удаление девайса $deviceId", "success")
-        sendDelete(
-            "http://localhost:8082/devices",
-            "deviceId",
-            deviceId,
-            true
-        )
+        sendDelete("http://localhost:8082/devices/$deviceId", true)
     }
 }
